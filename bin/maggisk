@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+cd $(dirname "$0")
+cd ..
+
+if [ -d venv ]; then
+    source venv/bin/activate
+else
+    echo "initializing virtualenv"
+    python3 -m venv venv
+    source venv/bin/activate
+    pip install --upgrade pip
+    pip install -r requirements.txt
+fi
+
+set -x
+python admin.py "$@"

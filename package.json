@@ -1,0 +1,15 @@
+{
+  "name": "maggisk",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "elm-live src/Main.elm --pushstate --port 1234 --dir=static -- --debug --output=static/app.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {
+    "elm-live": "^4.0.1"
+  }
+}

@@ -1,0 +1,2 @@
+Markdown==3.2
+Pygments==2.5.2
