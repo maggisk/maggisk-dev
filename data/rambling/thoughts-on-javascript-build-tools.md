@@ -8,7 +8,7 @@ I love the idea of [parcel](https://parceljs.org/) and in theory you should be a
 
 Why are javascript build tools so complex? Isn't most of the complexity coming from importing non-javascript files from javascript. Is that complexity worth it? What if we stop the abomination that is importing images, css files etc. from javascript. Couldn't we hugely simplify our build process?
 
-As long as we stick to importing javascript from javascript we can simply call `sass --watch` for our css, `babel app.js` for our javascript, `elm make` if using elm, `dev-server ./static` for live-reloading, `uglifyjs app.js --compress --mangle` for javascript minification. No complex abstractions. No extra packages for each of your dependencies like sass + sass-loader, elm + elm-webpack-loader, babel + babel-loader etc. when using webpack. No build tool messing up the errors/stacktraces from your tools/libraries.
+As long as we stick to importing javascript from javascript we can simply call `sass --watch` for our css, `babel app.js` for our javascript, `elm make` if using elm, `dev-server ./static` for live-reloading, `uglifyjs app.js --compress --mangle` for javascript minification. No complex abstractions. No extra packages for each of your dependencies like sass + sass-loader, elm + elm-webpack-loader, babel + babel-loader etc. when using webpack. No build tool messing up the error messages from your tools/libraries.
 
 What I want from my build tool is:
 

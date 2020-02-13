@@ -28,7 +28,9 @@ global =
     Global.global
         [ Global.selector "html, body"
             [ fontFamilies [ "'Open Sans'", "sans-serif" ]
+            , overflow hidden
             , margin zero
+            , height (pct 100)
             , padding zero
             , fontSize (px 18)
             , lineHeight (pct 150)
@@ -44,7 +46,7 @@ global =
             , margin2 (px 30) zero
             ]
         , Global.selector "p"
-            [ margin2 (px 20) zero
+            [ margin2 (px 25) zero
             ]
         , Global.selector "a"
             [ color (hex "#2980b9")
@@ -66,12 +68,19 @@ global =
             ]
         , Global.selector "pre code"
             [ display block
-            , overflowX scroll
+            , overflowX auto
             , backgroundColor (hex "fff")
             , padding (px 10)
             , fontSize (px 16)
             ]
         ]
+
+
+root : List Style
+root =
+    [ height (pct 100)
+    , overflow auto
+    ]
 
 
 header : List Style
@@ -85,9 +94,10 @@ header =
 headerTitle : List Style
 headerTitle =
     [ margin zero
-    , padding (px 40)
+    , padding (px 28)
     , pointerEvents none
     , fontFamily monospace
+    , fontSize (px 16)
     ]
 
 

@@ -3,7 +3,7 @@ module TheDude exposing (viewTheDude)
 import Css exposing (..)
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (css, style)
-import Types exposing (Point)
+import Util exposing (Point)
 
 
 viewTheDude : Point -> Html msg

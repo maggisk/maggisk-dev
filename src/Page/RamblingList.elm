@@ -1,16 +1,14 @@
 module Page.RamblingList exposing (Model, Msg, empty, init, update, view)
 
 import Api
-import Common exposing (maybeInit)
 import Css exposing (..)
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (css)
 import List.Extra exposing (gatherEqualsBy)
-import Misc
 import RemoteData exposing (WebData)
 import Route
 import Time
-import Types exposing (StyledDoc)
+import Util
 
 
 type alias Model =
@@ -28,11 +26,8 @@ empty =
 
 init : Model -> ( Model, Cmd Msg )
 init model =
-    maybeInit model
-        model
-        ( RemoteData.Loading
-        , Api.allRamblings (RemoteData.fromResult >> GotResponse)
-        )
+    Util.initIfNeeded model model RemoteData.Loading <|
+        Api.allRamblings (RemoteData.fromResult >> GotResponse)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -40,13 +35,13 @@ update (GotResponse ramblings) model =
     ( ramblings, Cmd.none )
 
 
-view : Model -> Common.StyledDocument Msg
+view : Model -> Util.StyledDoc Msg
 view model =
     RemoteData.map viewSuccess model
-        |> Misc.handleRemoteFailure
+        |> Util.handleRemoteFailure
 
 
-viewSuccess : List Api.Ramble -> StyledDoc Msg
+viewSuccess : List Api.Ramble -> Util.StyledDoc Msg
 viewSuccess ramblings =
     { title = "Ramblings"
     , body =
@@ -66,9 +61,9 @@ viewRamble : Api.Ramble -> Html Msg
 viewRamble r =
     li [ css styleLine ]
         [ span [ css styleDate ]
-            [ span [] [ text <| Misc.shortMonthName <| Time.toMonth Time.utc r.time ]
+            [ span [] [ text <| Util.shortMonthName <| Time.toMonth Time.utc r.time ]
             , span [] [ text " " ]
-            , span [] [ text <| String.fromInt <| Time.toDay Time.utc r.time ]
+            , span [] [ text <| Util.ordinal (Time.toDay Time.utc r.time) ]
             ]
         , a [ Route.href (Route.Rambling r.slug), css styleLink ]
             [ text r.title ]

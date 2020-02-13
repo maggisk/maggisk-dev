@@ -1,11 +1,41 @@
-module Misc exposing (handleRemoteFailure, innerHtml, shortMonthName)
+module Util exposing (..)
 
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (attribute)
 import Http
-import RemoteData exposing (WebData)
+import RemoteData exposing (RemoteData, WebData)
 import Time
-import Types exposing (StyledDoc)
+
+
+type alias StyledDoc msg =
+    { title : String
+    , body : List (Html msg)
+    }
+
+
+type alias Point =
+    { x : Float
+    , y : Float
+    }
+
+
+dangerouslySetInnerHtml : String -> Html msg
+dangerouslySetInnerHtml html =
+    node "elm-innerhtml" [ attribute "html" html ] []
+
+
+isFetchNeeded : RemoteData e a -> Bool
+isFetchNeeded currentData =
+    RemoteData.isNotAsked currentData || RemoteData.isFailure currentData
+
+
+initIfNeeded : model -> RemoteData e a -> model -> Cmd cmd -> ( model, Cmd cmd )
+initIfNeeded currentModel data newModel cmd =
+    if isFetchNeeded data then
+        ( newModel, cmd )
+
+    else
+        ( currentModel, Cmd.none )
 
 
 handleRemoteFailure : WebData (StyledDoc msg) -> StyledDoc msg
@@ -98,6 +128,26 @@ shortMonthName month =
             "dec"
 
 
-innerHtml : String -> Html msg
-innerHtml html =
-    node "elm-innerhtml" [ attribute "html" html ] []
+ordinalSuffix : Int -> String
+ordinalSuffix i =
+    if modBy (abs i) 100 // 10 == 1 then
+        "th"
+
+    else
+        case modBy (abs i) 10 of
+            1 ->
+                "st"
+
+            2 ->
+                "nd"
+
+            3 ->
+                "rd"
+
+            _ ->
+                "th"
+
+
+ordinal : Int -> String
+ordinal i =
+    String.fromInt i ++ ordinalSuffix i

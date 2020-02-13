@@ -1,11 +1,10 @@
 module Page.Project exposing (Model, Msg, empty, init, update, view)
 
 import Api
-import Common exposing (maybeInit)
 import Dict exposing (Dict)
 import Html.Styled exposing (..)
-import Misc
 import RemoteData exposing (WebData)
+import Util
 
 
 type alias Model =
@@ -23,17 +22,15 @@ empty =
 
 getBySlug : String -> Dict String (WebData Api.Project) -> WebData Api.Project
 getBySlug slug ramblings =
-    Dict.get slug ramblings
-        |> Maybe.withDefault RemoteData.NotAsked
+    Dict.get slug ramblings |> Maybe.withDefault RemoteData.NotAsked
 
 
 init : Model -> String -> ( Model, Cmd Msg )
 init model slug =
-    maybeInit model
+    Util.initIfNeeded model
         (getBySlug slug model)
-        ( Dict.insert slug RemoteData.Loading model
-        , Api.project (RemoteData.fromResult >> GotResponse slug) slug
-        )
+        (Dict.insert slug RemoteData.Loading model)
+        (Api.project (RemoteData.fromResult >> GotResponse slug) slug)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -41,17 +38,17 @@ update (GotResponse slug project) model =
     ( Dict.insert slug project model, Cmd.none )
 
 
-view : Model -> String -> Common.StyledDocument Msg
+view : Model -> String -> Util.StyledDoc Msg
 view model slug =
     RemoteData.map viewSuccess (getBySlug slug model)
-        |> Misc.handleRemoteFailure
+        |> Util.handleRemoteFailure
 
 
-viewSuccess : Api.Project -> Common.StyledDocument Msg
+viewSuccess : Api.Project -> Util.StyledDoc Msg
 viewSuccess project =
     { title = project.title
     , body =
         [ h2 [] [ text project.title ]
-        , Misc.innerHtml (project.body |> Maybe.withDefault "<!-- missing body -->")
+        , Util.dangerouslySetInnerHtml (project.body |> Maybe.withDefault "<!-- missing body -->")
         ]
     }
