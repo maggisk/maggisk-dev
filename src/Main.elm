@@ -14,8 +14,10 @@ import Style
 import Api
 import TheDude
 import Types exposing (Point)
-import Page.RamblingIndex
+import Page.RamblingList
 import Page.Rambling
+import Page.ProjectList
+import Page.Project
 
 
 type alias Model =
@@ -23,8 +25,10 @@ type alias Model =
     , route : Maybe Route
     , loading : Bool
     , mousePos : Point
-    , ramblingIndexPage : Page.RamblingIndex.Model
+    , ramblingIndexPage : Page.RamblingList.Model
     , ramblingPage : Page.Rambling.Model
+    , projectListPage : Page.ProjectList.Model
+    , projectPage : Page.Project.Model
     }
 
 
@@ -32,8 +36,10 @@ type Msg
     = LinkClicked Browser.UrlRequest
     | UrlChanged Url.Url
     | MouseMove Point
-    | RamblingIndexMsg Page.RamblingIndex.Msg
+    | RamblingIndexMsg Page.RamblingList.Msg
     | RamblingMsg Page.Rambling.Msg
+    | ProjectListMsg Page.ProjectList.Msg
+    | ProjectMsg Page.Project.Msg
 
 
 main : Program () Model Msg
@@ -55,8 +61,10 @@ init _ url key =
         , route = Nothing
         , loading = True
         , mousePos = Point 0.0 0.0
-        , ramblingIndexPage = Page.RamblingIndex.empty
+        , ramblingIndexPage = Page.RamblingList.empty
         , ramblingPage = Page.Rambling.empty
+        , projectListPage = Page.ProjectList.empty
+        , projectPage = Page.Project.empty
         }
         url
 
@@ -78,7 +86,7 @@ update msg model =
 
         RamblingIndexMsg submsg ->
             let
-                ( submodel, cmd ) = Page.RamblingIndex.update submsg model.ramblingIndexPage
+                ( submodel, cmd ) = Page.RamblingList.update submsg model.ramblingIndexPage
             in
                 ( { model | ramblingIndexPage = submodel }, Cmd.map RamblingIndexMsg cmd )
 
@@ -87,6 +95,18 @@ update msg model =
                 ( submodel, cmd ) = Page.Rambling.update submsg model.ramblingPage
             in
                 ( { model | ramblingPage = submodel }, Cmd.map RamblingMsg cmd )
+
+        ProjectListMsg submsg ->
+            let
+                ( submodel, cmd ) = Page.ProjectList.update submsg model.projectListPage
+            in
+                ( { model | projectListPage = submodel }, Cmd.map ProjectListMsg cmd )
+
+        ProjectMsg submsg ->
+            let
+                ( submodel, cmd ) = Page.Project.update submsg model.projectPage
+            in
+                ( { model | projectPage = submodel }, Cmd.map ProjectMsg cmd )
 
 
 subscriptions : Model -> Sub Msg
@@ -109,13 +129,21 @@ navigate model url =
 initPage : Model -> (Model, Cmd Msg)
 initPage model =
     case model.route of
-        Just Route.RamblingIndex ->
-            Page.RamblingIndex.init model.ramblingIndexPage
-                |> mergeModelCmd RamblingIndexMsg (\page -> { model | ramblingIndexPage = page} )
+        Just Route.RamblingList ->
+            Page.RamblingList.init model.ramblingIndexPage
+                |> mergeModelCmd RamblingIndexMsg (\page -> { model | ramblingIndexPage = page})
 
         Just (Route.Rambling slug) ->
             Page.Rambling.init model.ramblingPage slug
-                |> mergeModelCmd RamblingMsg (\page -> { model | ramblingPage = page} )
+                |> mergeModelCmd RamblingMsg (\page -> { model | ramblingPage = page})
+
+        Just Route.ProjectList ->
+            Page.ProjectList.init model.projectListPage
+                |> mergeModelCmd ProjectListMsg (\page -> { model | projectListPage = page})
+
+        Just (Route.Project slug) ->
+            Page.Project.init model.projectPage slug
+                |> mergeModelCmd ProjectMsg (\page -> { model | projectPage = page})
 
         Nothing ->
             ( model, Cmd.none )
@@ -159,13 +187,21 @@ rightEyeStyle =
 viewPage : Model -> Common.StyledDocument Msg
 viewPage model =
     case model.route of
-        Just Route.RamblingIndex ->
-            Page.RamblingIndex.view model.ramblingIndexPage
+        Just Route.RamblingList ->
+            Page.RamblingList.view model.ramblingIndexPage
                 |> mapHtml RamblingIndexMsg
 
         Just (Route.Rambling slug) ->
             Page.Rambling.view model.ramblingPage slug
                 |> mapHtml RamblingMsg
+
+        Just Route.ProjectList ->
+            Page.ProjectList.view model.projectListPage
+                |> mapHtml ProjectListMsg
+
+        Just (Route.Project slug) ->
+            Page.Project.view model.projectPage slug
+                |> mapHtml ProjectMsg
 
         Nothing ->
             { title = "404"
@@ -185,30 +221,29 @@ mapHtml toMsg { title, body } =
 
 viewHeader : Html Msg
 viewHeader =
-    let
-        links =
-            [ ("Ramblings", Route.RamblingIndex)
-            , ("Projects", Route.RamblingIndex)
-            , ("CV", Route.RamblingIndex)
-            ]
-    in
     header [css Style.header]
         [ h1 [ css Style.headerTitle ]
             [ text "Maggisk"
             , span [ css [ fontSize (px 14) ] ] [ text " |> Ramblings of a software developer" ]
             ]
-        , div [ css Style.headerLinks ]
-            [ a [ Route.href Route.RamblingIndex
-                , Style.list
-                    [ (Style.headerLink, True)
-                    , (Style.headerLinkSelected, True)
-                    ]
+        , div [ css Style.headerLinks ] <|
+            List.map viewLink
+                [ ("Ramblings", Route.RamblingList)
+                , ("Projects", Route.ProjectList)
+                , ("CV", Route.RamblingList)
                 ]
-                [ text "Ramblings" ]
-            , a [ css Style.headerLink, href "" ] [ text "Projects" ]
-            , a [ css Style.headerLink, href "" ] [ text "CV" ]
-            ]
         ]
+
+
+viewLink : (String, Route) -> Html Msg
+viewLink (title, route) =
+    a [ Route.href route
+      , Style.list
+          [ (Style.headerLink, True)
+          , (Style.headerLinkSelected, True)
+          ]
+      ]
+      [ text title ]
 
 
 viewMain : Html Msg

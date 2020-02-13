@@ -2,7 +2,7 @@
 * @slug dangerouslysetinnerhtml-in-elm
 * @time 2020-02-12 13:28
 
-I love the elm language, but sometimes I'm baffled by the decisions made by the authors. How can you have the skill and experience to create something like elm, yet [not realize](https://github.com/elm/html/issues/172) that there are plenty of valid reasons to want to render html provided by the server. Displaying html created using a rich text editor is one very common scenario. Every major web framework provides this feature, yet it was removed from elm.
+I love the elm language, but sometimes I'm baffled by the decisions made by the authors. How can you have the skill and experience to create something amazing like elm, yet [not realize](https://github.com/elm/html/issues/172) that there are plenty of valid reasons to want to render html provided by the server. Displaying html created using a rich text editor is one very common scenario. Every major web framework provides this feature, yet it was removed from elm.
 
 There are plenty of really ugly suggestions in that issue thread, yet no fully working code examples of how to solve this. So here it is, the least ugly solution using [custom elements](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements).
 
@@ -27,7 +27,7 @@ if (window.customElements) {
 
 And a wrapper function on the elm side to use it
 ```elm
-import Html exposing (node)
+import Html exposing (Html, node)
 import Html.Attributes exposing (attribute)
 
 

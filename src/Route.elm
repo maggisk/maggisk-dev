@@ -7,31 +7,41 @@ import Url.Parser as Parser exposing ((</>), Parser, map, oneOf, s, string)
 
 
 type Route
-    = RamblingIndex
+    = RamblingList
     | Rambling String
+    | ProjectList
+    | Project String
 
 
 parser : Parser (Route -> a) a
 parser =
     oneOf
-        [ map RamblingIndex Parser.top
+        [ map RamblingList Parser.top
         , map Rambling (s "ramble" </> string)
+        , map ProjectList (s "projects")
+        , map Project (s "projects" </> string)
         ]
 
 
 reverse : Route -> List String
 reverse route =
     case route of
-        RamblingIndex ->
+        RamblingList ->
             []
 
         Rambling slug ->
             [ "ramble", slug ]
 
+        ProjectList ->
+            [ "projects" ]
+
+        Project slug ->
+            [ "projects", slug ]
+
 
 default : Route
 default =
-    RamblingIndex
+    RamblingList
 
 
 href : Route -> Html.Styled.Attribute msg

@@ -65,6 +65,7 @@ global =
             , overflowX scroll
             , backgroundColor (hex "fff")
             , padding (px 10)
+            , fontSize (px 16)
             ]
         ]
 

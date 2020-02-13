@@ -1,4 +1,4 @@
-module Page.Rambling exposing (Model, Msg, empty, init, update, view)
+module Page.Project exposing (Model, Msg, empty, init, update, view)
 
 import RemoteData exposing (WebData)
 import Api
@@ -8,11 +8,11 @@ import Dict exposing (Dict)
 import Misc
 
 
-type alias Model = Dict String (WebData Api.Ramble)
+type alias Model = Dict String (WebData Api.Project)
 
 
 type Msg
-    = GotResponse String (WebData Api.Ramble)
+    = GotResponse String (WebData Api.Project)
 
 
 empty : Model
@@ -20,7 +20,7 @@ empty =
     Dict.empty
 
 
-getBySlug : String -> Dict String (WebData Api.Ramble) -> WebData Api.Ramble
+getBySlug : String -> Dict String (WebData Api.Project) -> WebData Api.Project
 getBySlug slug ramblings =
     Dict.get slug ramblings
         |> Maybe.withDefault RemoteData.NotAsked
@@ -30,13 +30,13 @@ init : Model -> String -> (Model, Cmd Msg)
 init model slug =
     maybeInit model (getBySlug slug model)
         ( Dict.insert slug RemoteData.Loading model
-        , Api.rambling (RemoteData.fromResult >> (GotResponse slug)) slug
+        , Api.project (RemoteData.fromResult >> (GotResponse slug)) slug
         )
 
 
 update : Msg -> Model -> (Model, Cmd Msg)
-update (GotResponse slug rambling) model =
-    ( Dict.insert slug rambling model, Cmd.none )
+update (GotResponse slug project) model =
+    ( Dict.insert slug project model, Cmd.none )
 
 
 view : Model -> String -> Common.StyledDocument Msg
@@ -45,11 +45,11 @@ view model slug =
         |> Misc.handleRemoteFailure
 
 
-viewSuccess : Api.Ramble -> Common.StyledDocument Msg
-viewSuccess ramble =
-    { title = ramble.title
+viewSuccess : Api.Project -> Common.StyledDocument Msg
+viewSuccess project =
+    { title = project.title
     , body =
-        [ h2 [] [ text ramble.title ]
-        , Misc.innerHtml (ramble.body |> Maybe.withDefault "<!-- missing body -->")
+        [ h2 [] [ text project.title ]
+        , Misc.innerHtml (project.body |> Maybe.withDefault "<!-- missing body -->")
         ]
     }

@@ -33,7 +33,7 @@ viewEye x y mouse =
 
 eyeballDistance : Float -> Float -> Point -> Float
 eyeballDistance x y mouse =
-    sqrt (((x - mouse.x)^2) + ((y - mouse.y)^2))
+    sqrt ((x - mouse.x)^2 + (y - mouse.y)^2)
 
 
 dudeStyle : List Style

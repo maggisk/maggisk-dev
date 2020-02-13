@@ -8,19 +8,20 @@ I love the idea of [parcel](https://parceljs.org/) and in theory you should be a
 
 Why are javascript build tools so complex? Isn't most of the complexity coming from importing non-javascript files from javascript. Is that complexity worth it? What if we stop the abomination that is importing images, css files etc. from javascript. Couldn't we hugely simplify our build process?
 
-As long as we stick to importing javascript from javascript we can simply call `sass --watch` for our css, `babel app.js` for our javascript, `elm make` if using elm, `dev-server ./static` for live-reloading, `uglifyjs app.js --compress --mangle` for javascript minification. No complex abstractions. No extra packages for each of your dependencies like `sass-loader`, `elm-webpack-loader`, `babel-loader` etc. when using webpack. No build tool messing up the errors/stacktraces from your tools/libraries.
+As long as we stick to importing javascript from javascript we can simply call `sass --watch` for our css, `babel app.js` for our javascript, `elm make` if using elm, `dev-server ./static` for live-reloading, `uglifyjs app.js --compress --mangle` for javascript minification. No complex abstractions. No extra packages for each of your dependencies like sass + sass-loader, elm + elm-webpack-loader, babel + babel-loader etc. when using webpack. No build tool messing up the errors/stacktraces from your tools/libraries.
 
 What I want from my build tool is:
 
 * call multiple arbitrary shell commands in parallel and combine the output in a single terminal window
-* offer the ability to watch files for changes and re-run commands on changes
+* offer the ability to watch files for changes and re-run commands when they change
 * development webserver with support for live reloading of at least css changes
 
-You can kind of set this up yourself using multiple different npm packages, but it's a bit of work and the end result is not perfect either.
+You can kind of set this up yourself using multiple different npm packages, but it takes a bit of work.
  
 * [chokidar](https://github.com/paulmillr/chokidar) for watching files.
 * [npm-run-all](https://www.npmjs.com/package/npm-run-all) for running multiple commands in parallel in the same terminal window.
 * [live-server](https://www.npmjs.com/package/live-server) for live-reloading
+* All the other tools you're using (sass, babel etc)
 
 Your package.json scripts field might look something like this (untested, probably has bugs)
 
@@ -40,6 +41,6 @@ Your package.json scripts field might look something like this (untested, probab
 }
 ```
 
-I'm probably overlooking some webpack feature that can't be replaced like this. Code splitting might be one, but if you're using something like [Elm](https://elm-lang.org/) or [Svelte](https://svelte.dev/) the output is so tiny compared to React/Vue/Angular that it doesn't really matter.
+It's not perfect. You loose all coloring from your build commands for example. I'm also probably overlooking some webpack feature that can't be replaced like this. Code splitting might be one, but if you're using something like [Elm](https://elm-lang.org/) or [Svelte](https://svelte.dev/) the output is so tiny compared to React/Vue/Angular that it doesn't really matter.
 
 There are some issues left, like combining your plain-javascript and elm-generated-javascript into a single file, but this is the build setup that I'm going to strive for from now on.

@@ -1,4 +1,4 @@
-module Page.RamblingIndex exposing (Model, Msg, empty, init, update, view)
+module Page.RamblingList exposing (Model, Msg, empty, init, update, view)
 
 import Css exposing (..)
 import RemoteData exposing (WebData)
@@ -13,42 +13,38 @@ import Time
 import List.Extra exposing (gatherEqualsBy)
 
 
-type alias Model =
-    { ramblings : WebData (List Api.ShortRamble)
-    }
+type alias Model = WebData (List Api.Ramble)
 
 
 type Msg
-    = GotResponse (WebData (List Api.ShortRamble))
+    = GotResponse (WebData (List Api.Ramble))
 
 
 empty : Model
 empty =
-    Model RemoteData.NotAsked
+    RemoteData.NotAsked
 
 
 init : Model -> (Model, Cmd Msg)
 init model =
-    maybeInit model model.ramblings
-        ( { model | ramblings = RemoteData.Loading }
+    maybeInit model model
+        ( RemoteData.Loading
         , Api.allRamblings (RemoteData.fromResult >> GotResponse)
         )
 
 
 update : Msg -> Model -> (Model, Cmd Msg)
-update msg model =
-    case msg of
-        GotResponse ramblings ->
-            ( { model | ramblings = ramblings }, Cmd.none )
+update (GotResponse ramblings) model =
+    ( ramblings, Cmd.none )
 
 
 view : Model -> Common.StyledDocument Msg
 view model =
-    RemoteData.map viewSuccess model.ramblings
+    RemoteData.map viewSuccess model
         |> Misc.handleRemoteFailure
 
 
-viewSuccess : List Api.ShortRamble -> StyledDoc Msg
+viewSuccess : List Api.Ramble -> StyledDoc Msg
 viewSuccess ramblings =
     { title = "Ramblings"
     , body =
@@ -56,7 +52,7 @@ viewSuccess ramblings =
     }
 
 
-viewYear : (Api.ShortRamble, List Api.ShortRamble) -> Html Msg
+viewYear : (Api.Ramble, List Api.Ramble) -> Html Msg
 viewYear (r, rambles) =
     div []
         [ h2 [] [ text <| String.fromInt <| Time.toYear Time.utc r.time ]
@@ -64,35 +60,35 @@ viewYear (r, rambles) =
         ]
 
 
-viewRamble : Api.ShortRamble -> Html Msg
+viewRamble : Api.Ramble -> Html Msg
 viewRamble r =
-    li [ css lineStyle ]
-        [ span [ css dateStyle ]
+    li [ css styleLine ]
+        [ span [ css styleDate ]
             [ span [] [ text <| Misc.shortMonthName <| Time.toMonth Time.utc r.time ]
             , span [] [ text " " ]
             , span [] [ text <| String.fromInt <| Time.toDay Time.utc r.time ]
             ]
-        , a [ Route.href (Route.Rambling r.slug), css linkStyle ]
+        , a [ Route.href (Route.Rambling r.slug), css styleLink]
             [ text r.title ]
         ]
 
 
-lineStyle : List Style
-lineStyle =
+styleLine : List Style
+styleLine =
     [ listStyleType none
     , fontSize (px 24)
     , margin2 (px 15) zero
     ]
 
 
-linkStyle : List Style
-linkStyle =
+styleLink : List Style
+styleLink =
     [ textDecoration none
     ]
 
 
-dateStyle : List Style
-dateStyle =
+styleDate : List Style
+styleDate =
     [ fontSize (px 16)
     , display inlineBlock
     , paddingRight (px 20)
