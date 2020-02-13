@@ -2,6 +2,8 @@
 
 mkdir -p dist
 rm -rf dist/*
+
+python3 admin.py build
 cp -r static/* dist/
 
 npm install --only=prod
