@@ -1,14 +1,15 @@
 module Page.Rambling exposing (Model, Msg, empty, init, update, view)
 
-import RemoteData exposing (WebData)
 import Api
-import Html.Styled exposing (..)
 import Common exposing (maybeInit)
 import Dict exposing (Dict)
+import Html.Styled exposing (..)
 import Misc
+import RemoteData exposing (WebData)
 
 
-type alias Model = Dict String (WebData Api.Ramble)
+type alias Model =
+    Dict String (WebData Api.Ramble)
 
 
 type Msg
@@ -26,15 +27,16 @@ getBySlug slug ramblings =
         |> Maybe.withDefault RemoteData.NotAsked
 
 
-init : Model -> String -> (Model, Cmd Msg)
+init : Model -> String -> ( Model, Cmd Msg )
 init model slug =
-    maybeInit model (getBySlug slug model)
+    maybeInit model
+        (getBySlug slug model)
         ( Dict.insert slug RemoteData.Loading model
-        , Api.rambling (RemoteData.fromResult >> (GotResponse slug)) slug
+        , Api.rambling (RemoteData.fromResult >> GotResponse slug) slug
         )
 
 
-update : Msg -> Model -> (Model, Cmd Msg)
+update : Msg -> Model -> ( Model, Cmd Msg )
 update (GotResponse slug rambling) model =
     ( Dict.insert slug rambling model, Cmd.none )
 

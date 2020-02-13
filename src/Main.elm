@@ -1,23 +1,23 @@
 module Main exposing (main)
 
+import Api
 import Browser
 import Browser.Events
 import Browser.Navigation as Nav
+import Common
 import Css exposing (..)
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (..)
-import Common
-import Url exposing (Url)
 import Json.Decode as Decode
+import Page.Project
+import Page.ProjectList
+import Page.Rambling
+import Page.RamblingList
 import Route exposing (Route)
 import Style
-import Api
 import TheDude
 import Types exposing (Point)
-import Page.RamblingList
-import Page.Rambling
-import Page.ProjectList
-import Page.Project
+import Url exposing (Url)
 
 
 type alias Model =
@@ -69,7 +69,7 @@ init _ url key =
         url
 
 
-update : Msg -> Model -> (Model, Cmd Msg)
+update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         LinkClicked (Browser.Internal url) ->
@@ -86,27 +86,31 @@ update msg model =
 
         RamblingIndexMsg submsg ->
             let
-                ( submodel, cmd ) = Page.RamblingList.update submsg model.ramblingIndexPage
+                ( submodel, cmd ) =
+                    Page.RamblingList.update submsg model.ramblingIndexPage
             in
-                ( { model | ramblingIndexPage = submodel }, Cmd.map RamblingIndexMsg cmd )
+            ( { model | ramblingIndexPage = submodel }, Cmd.map RamblingIndexMsg cmd )
 
         RamblingMsg submsg ->
             let
-                ( submodel, cmd ) = Page.Rambling.update submsg model.ramblingPage
+                ( submodel, cmd ) =
+                    Page.Rambling.update submsg model.ramblingPage
             in
-                ( { model | ramblingPage = submodel }, Cmd.map RamblingMsg cmd )
+            ( { model | ramblingPage = submodel }, Cmd.map RamblingMsg cmd )
 
         ProjectListMsg submsg ->
             let
-                ( submodel, cmd ) = Page.ProjectList.update submsg model.projectListPage
+                ( submodel, cmd ) =
+                    Page.ProjectList.update submsg model.projectListPage
             in
-                ( { model | projectListPage = submodel }, Cmd.map ProjectListMsg cmd )
+            ( { model | projectListPage = submodel }, Cmd.map ProjectListMsg cmd )
 
         ProjectMsg submsg ->
             let
-                ( submodel, cmd ) = Page.Project.update submsg model.projectPage
+                ( submodel, cmd ) =
+                    Page.Project.update submsg model.projectPage
             in
-                ( { model | projectPage = submodel }, Cmd.map ProjectMsg cmd )
+            ( { model | projectPage = submodel }, Cmd.map ProjectMsg cmd )
 
 
 subscriptions : Model -> Sub Msg
@@ -121,43 +125,44 @@ decodeMousePos =
         (Decode.field "pageY" Decode.float)
 
 
-navigate : Model -> Url -> (Model, Cmd Msg)
+navigate : Model -> Url -> ( Model, Cmd Msg )
 navigate model url =
     initPage { model | route = Route.fromUrl url }
 
 
-initPage : Model -> (Model, Cmd Msg)
+initPage : Model -> ( Model, Cmd Msg )
 initPage model =
     case model.route of
         Just Route.RamblingList ->
             Page.RamblingList.init model.ramblingIndexPage
-                |> mergeModelCmd RamblingIndexMsg (\page -> { model | ramblingIndexPage = page})
+                |> mergeModelCmd RamblingIndexMsg (\page -> { model | ramblingIndexPage = page })
 
         Just (Route.Rambling slug) ->
             Page.Rambling.init model.ramblingPage slug
-                |> mergeModelCmd RamblingMsg (\page -> { model | ramblingPage = page})
+                |> mergeModelCmd RamblingMsg (\page -> { model | ramblingPage = page })
 
         Just Route.ProjectList ->
             Page.ProjectList.init model.projectListPage
-                |> mergeModelCmd ProjectListMsg (\page -> { model | projectListPage = page})
+                |> mergeModelCmd ProjectListMsg (\page -> { model | projectListPage = page })
 
         Just (Route.Project slug) ->
             Page.Project.init model.projectPage slug
-                |> mergeModelCmd ProjectMsg (\page -> { model | projectPage = page})
+                |> mergeModelCmd ProjectMsg (\page -> { model | projectPage = page })
 
         Nothing ->
             ( model, Cmd.none )
 
 
-mergeModelCmd : (cmd -> Msg) -> (a -> Model) -> (a, Cmd cmd) -> (Model, Cmd Msg)
-mergeModelCmd mapCmd updateModel (submodel, subcmd) =
+mergeModelCmd : (cmd -> Msg) -> (a -> Model) -> ( a, Cmd cmd ) -> ( Model, Cmd Msg )
+mergeModelCmd mapCmd updateModel ( submodel, subcmd ) =
     ( updateModel submodel, Cmd.map mapCmd subcmd )
 
 
 view : Model -> Browser.Document Msg
 view model =
     let
-        { title, body } = viewPage model
+        { title, body } =
+            viewPage model
     in
     { title = title ++ " |> maggisk"
     , body =
@@ -169,9 +174,6 @@ view model =
             , viewMouse model.mousePos
             ]
     }
-
-
-
 
 
 leftEyeStyle : List Style
@@ -221,43 +223,43 @@ mapHtml toMsg { title, body } =
 
 viewHeader : Html Msg
 viewHeader =
-    header [css Style.header]
+    header [ css Style.header ]
         [ h1 [ css Style.headerTitle ]
             [ text "Maggisk"
             , span [ css [ fontSize (px 14) ] ] [ text " |> Ramblings of a software developer" ]
             ]
         , div [ css Style.headerLinks ] <|
             List.map viewLink
-                [ ("Ramblings", Route.RamblingList)
-                , ("Projects", Route.ProjectList)
-                , ("CV", Route.RamblingList)
+                [ ( "Ramblings", Route.RamblingList )
+                , ( "Projects", Route.ProjectList )
+                , ( "CV", Route.RamblingList )
                 ]
         ]
 
 
-viewLink : (String, Route) -> Html Msg
-viewLink (title, route) =
-    a [ Route.href route
-      , Style.list
-          [ (Style.headerLink, True)
-          , (Style.headerLinkSelected, True)
-          ]
-      ]
-      [ text title ]
+viewLink : ( String, Route ) -> Html Msg
+viewLink ( title, route ) =
+    a
+        [ Route.href route
+        , Style.list
+            [ ( Style.headerLink, True )
+            , ( Style.headerLinkSelected, True )
+            ]
+        ]
+        [ text title ]
 
 
 viewMain : Html Msg
 viewMain =
     main_ [ css Style.main_ ]
-        [
-        ]
+        []
 
 
 viewMouse : Point -> Html Msg
 viewMouse pos =
     div
         [ css Style.mouse
-        , style "left" ((String.fromFloat pos.x) ++ "px")
-        , style "top" ((String.fromFloat pos.y) ++ "px")
+        , style "left" (String.fromFloat pos.x ++ "px")
+        , style "top" (String.fromFloat pos.y ++ "px")
         ]
         []

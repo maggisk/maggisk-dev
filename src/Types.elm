@@ -1,4 +1,4 @@
-module Types exposing (StyledDoc, Point)
+module Types exposing (Point, StyledDoc)
 
 import Html.Styled exposing (Html)
 

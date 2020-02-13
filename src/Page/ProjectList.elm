@@ -1,19 +1,21 @@
 module Page.ProjectList exposing (Model, Msg, empty, init, update, view)
 
+import Api
+import Common exposing (maybeInit)
 import Css exposing (..)
 import Html.Styled exposing (..)
 import Html.Styled.Attributes
-import Api
-import Common exposing (maybeInit)
-import RemoteData exposing (WebData)
 import Misc
+import RemoteData exposing (WebData)
 import Route
 
 
-type alias Model = WebData (List Api.Project)
+type alias Model =
+    WebData (List Api.Project)
 
 
-type Msg = GotResponse (WebData (List Api.Project))
+type Msg
+    = GotResponse (WebData (List Api.Project))
 
 
 empty : Model
@@ -21,14 +23,16 @@ empty =
     RemoteData.NotAsked
 
 
-init : Model -> (Model, Cmd Msg)
+init : Model -> ( Model, Cmd Msg )
 init model =
-    maybeInit model model
+    maybeInit model
+        model
         ( RemoteData.Loading
         , Api.allProjects (RemoteData.fromResult >> GotResponse)
         )
 
-update : Msg -> Model -> (Model, Cmd Msg)
+
+update : Msg -> Model -> ( Model, Cmd Msg )
 update (GotResponse projects) model =
     ( projects, Cmd.none )
 

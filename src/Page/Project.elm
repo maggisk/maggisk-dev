@@ -1,14 +1,15 @@
 module Page.Project exposing (Model, Msg, empty, init, update, view)
 
-import RemoteData exposing (WebData)
 import Api
-import Html.Styled exposing (..)
 import Common exposing (maybeInit)
 import Dict exposing (Dict)
+import Html.Styled exposing (..)
 import Misc
+import RemoteData exposing (WebData)
 
 
-type alias Model = Dict String (WebData Api.Project)
+type alias Model =
+    Dict String (WebData Api.Project)
 
 
 type Msg
@@ -26,15 +27,16 @@ getBySlug slug ramblings =
         |> Maybe.withDefault RemoteData.NotAsked
 
 
-init : Model -> String -> (Model, Cmd Msg)
+init : Model -> String -> ( Model, Cmd Msg )
 init model slug =
-    maybeInit model (getBySlug slug model)
+    maybeInit model
+        (getBySlug slug model)
         ( Dict.insert slug RemoteData.Loading model
-        , Api.project (RemoteData.fromResult >> (GotResponse slug)) slug
+        , Api.project (RemoteData.fromResult >> GotResponse slug) slug
         )
 
 
-update : Msg -> Model -> (Model, Cmd Msg)
+update : Msg -> Model -> ( Model, Cmd Msg )
 update (GotResponse slug project) model =
     ( Dict.insert slug project model, Cmd.none )
 

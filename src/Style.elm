@@ -1,22 +1,26 @@
 module Style exposing (..)
 
 import Css exposing (..)
-import Css.Transitions
 import Css.Global as Global
+import Css.Transitions
 import Html.Styled exposing (Html)
 import Html.Styled.Attributes exposing (css)
 
 
-white = hex "#ecf0f1"
-dark = hex "#2c3e50"
+white =
+    hex "#ecf0f1"
 
 
-list : List (List Style, Bool) -> Html.Styled.Attribute msg
+dark =
+    hex "#2c3e50"
+
+
+list : List ( List Style, Bool ) -> Html.Styled.Attribute msg
 list pairs =
     pairs
-    |> List.filter Tuple.second
-    |> List.concatMap Tuple.first
-    |> css
+        |> List.filter Tuple.second
+        |> List.concatMap Tuple.first
+        |> css
 
 
 global : Html msg
@@ -68,7 +72,6 @@ global =
             , fontSize (px 16)
             ]
         ]
-
 
 
 header : List Style

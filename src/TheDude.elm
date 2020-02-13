@@ -5,6 +5,7 @@ import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (css, style)
 import Types exposing (Point)
 
+
 viewTheDude : Point -> Html msg
 viewTheDude mousePos =
     div []
@@ -16,24 +17,26 @@ viewTheDude mousePos =
 
 viewEye : Float -> Float -> Point -> Html msg
 viewEye x y mouse =
-    div [ css eyeStyle
-        , style "top" ((String.fromFloat y) ++ "px")
-        , style "left" ((String.fromFloat x) ++ "px")
+    div
+        [ css eyeStyle
+        , style "top" (String.fromFloat y ++ "px")
+        , style "left" (String.fromFloat x ++ "px")
         , style "transform-origin" "left top"
         ]
-        [ div [ css rotaterStyle
-              , style "transform-origin" "top left"
-              , style "width" (String.fromFloat (eyeballDistance x y mouse |> min 30.0) ++ "px")
-              , style "rotate" (String.fromFloat (atan2 (mouse.y - y) (mouse.x - x)) ++ "rad")
-              ]
-              [ div [ css eyeballStyle ] []
-              ]
+        [ div
+            [ css rotaterStyle
+            , style "transform-origin" "top left"
+            , style "width" (String.fromFloat (eyeballDistance x y mouse |> min 30.0) ++ "px")
+            , style "rotate" (String.fromFloat (atan2 (mouse.y - y) (mouse.x - x)) ++ "rad")
+            ]
+            [ div [ css eyeballStyle ] []
+            ]
         ]
 
 
 eyeballDistance : Float -> Float -> Point -> Float
 eyeballDistance x y mouse =
-    sqrt ((x - mouse.x)^2 + (y - mouse.y)^2)
+    sqrt ((x - mouse.x) ^ 2 + (y - mouse.y) ^ 2)
 
 
 dudeStyle : List Style

@@ -1,11 +1,11 @@
-module Misc exposing (handleRemoteFailure, shortMonthName, innerHtml)
+module Misc exposing (handleRemoteFailure, innerHtml, shortMonthName)
 
-import RemoteData exposing (WebData)
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (attribute)
-import Types exposing (StyledDoc)
 import Http
+import RemoteData exposing (WebData)
 import Time
+import Types exposing (StyledDoc)
 
 
 handleRemoteFailure : WebData (StyledDoc msg) -> StyledDoc msg
@@ -54,25 +54,48 @@ loading : StyledDoc msg
 loading =
     { title = "..."
     , body =
-        [ ]
+        []
     }
 
 
 shortMonthName : Time.Month -> String
 shortMonthName month =
     case month of
-        Time.Jan -> "jan"
-        Time.Feb -> "feb"
-        Time.Mar -> "mar"
-        Time.Apr -> "apr"
-        Time.May -> "mai"
-        Time.Jun -> "jun"
-        Time.Jul -> "jul"
-        Time.Aug -> "aug"
-        Time.Sep -> "sep"
-        Time.Oct -> "okt"
-        Time.Nov -> "nov"
-        Time.Dec -> "dec"
+        Time.Jan ->
+            "jan"
+
+        Time.Feb ->
+            "feb"
+
+        Time.Mar ->
+            "mar"
+
+        Time.Apr ->
+            "apr"
+
+        Time.May ->
+            "mai"
+
+        Time.Jun ->
+            "jun"
+
+        Time.Jul ->
+            "jul"
+
+        Time.Aug ->
+            "aug"
+
+        Time.Sep ->
+            "sep"
+
+        Time.Oct ->
+            "okt"
+
+        Time.Nov ->
+            "nov"
+
+        Time.Dec ->
+            "dec"
 
 
 innerHtml : String -> Html msg

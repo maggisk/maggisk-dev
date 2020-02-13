@@ -1,4 +1,4 @@
-module Route exposing (Route(..), default, href, toUrl, fromUrl)
+module Route exposing (Route(..), default, fromUrl, href, toUrl)
 
 import Html.Styled exposing (Attribute)
 import Html.Styled.Attributes

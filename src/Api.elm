@@ -1,11 +1,11 @@
-module Api exposing (Ramble, Project, allRamblings, rambling, allProjects, project)
+module Api exposing (Project, Ramble, allProjects, allRamblings, project, rambling)
 
-import Time
-import Http
-import Json.Decode as Decode exposing (Decoder, string, nullable)
-import Json.Decode.Pipeline exposing (required, optional)
-import Json.Decode.Extra exposing (parseInt)
 import Html exposing (Html)
+import Http
+import Json.Decode as Decode exposing (Decoder, nullable, string)
+import Json.Decode.Extra exposing (parseInt)
+import Json.Decode.Pipeline exposing (optional, required)
+import Time
 
 
 type alias Ramble =
