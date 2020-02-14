@@ -2,77 +2,82 @@ module TheDude exposing (viewTheDude)
 
 import Css exposing (..)
 import Html.Styled exposing (..)
-import Html.Styled.Attributes exposing (css, style)
+import Html.Styled.Attributes exposing (css, id, style)
 import Util exposing (Point)
 
 
-viewTheDude : Point -> Html msg
-viewTheDude mousePos =
+viewTheDude : Point -> Float -> Point -> Html msg
+viewTheDude mouse headRadius center =
+    let
+        eyeRadius =
+            headRadius * 0.6
+
+        lEye =
+            { x = center.x - (headRadius * 0.7), y = center.y + headRadius * 0.1 }
+
+        rEye =
+            { x = center.x + (headRadius * 0.6), y = center.y + headRadius * 0.1 }
+    in
     div []
-        [ div [ css dudeStyle ] []
-
-        -- , viewEye 60 90 mousePos
-        -- , viewEye 140 90 mousePos
+        [ div [ css (headStyle headRadius center) ] []
+        , div [ css (eyeStyle eyeRadius lEye) ] []
+        , div [ css (eyeStyle eyeRadius rEye) ] []
+        , eyeball eyeRadius mouse lEye
+        , eyeball eyeRadius mouse rEye
         ]
 
 
-viewEye : Float -> Float -> Point -> Html msg
-viewEye x y mouse =
+eyeball : Float -> Point -> Point -> Html msg
+eyeball eyeRadius mouse center =
+    let
+        distance =
+            sqrt (((mouse.x - center.x) ^ 2) + ((mouse.y - center.y) ^ 2))
+                |> min (eyeRadius * 0.75)
+
+        angle =
+            atan2 (mouse.y - center.y) (mouse.x - center.x)
+    in
     div
-        [ css eyeStyle
-        , style "top" (String.fromFloat y ++ "px")
-        , style "left" (String.fromFloat x ++ "px")
-        , style "transform-origin" "left top"
+        [ css (eyeballStyle center)
+        , style "left" (String.fromFloat (center.x + (cos angle * distance)) ++ "px")
+        , style "top" (String.fromFloat (center.y + (sin angle * distance)) ++ "px")
         ]
-        [ div
-            [ css rotaterStyle
-            , style "transform-origin" "top left"
-            , style "width" (String.fromFloat (eyeballDistance x y mouse |> min 30.0) ++ "px")
-            , style "rotate" (String.fromFloat (atan2 (mouse.y - y) (mouse.x - x)) ++ "rad")
-            ]
-            [ div [ css eyeballStyle ] []
-            ]
-        ]
+        []
 
 
-eyeballDistance : Float -> Float -> Point -> Float
-eyeballDistance x y mouse =
-    sqrt ((x - mouse.x) ^ 2 + (y - mouse.y) ^ 2)
-
-
-dudeStyle : List Style
-dudeStyle =
-    [ position absolute
-    , top (px 15)
-    , right (px 15)
-    , backgroundImage (url "/dude.png")
-    , backgroundSize contain
-    , backgroundRepeat noRepeat
-    , Css.width (px 80)
-    , Css.height (px 80)
+headStyle : Float -> Point -> List Style
+headStyle radius center =
+    [ batch (circle radius)
+    , position fixed
+    , top (px center.y)
+    , left (px center.x)
     ]
 
 
-eyeStyle : List Style
-eyeStyle =
-    [ position absolute
+eyeStyle : Float -> Point -> List Style
+eyeStyle radius center =
+    [ batch (circle radius)
+    , position fixed
+    , left (px center.x)
+    , top (px center.y)
     ]
 
 
-rotaterStyle : List Style
-rotaterStyle =
-    [ position absolute
-    , top zero
-    ]
-
-
-eyeballStyle : List Style
-eyeballStyle =
-    [ position absolute
-    , right zero
-    , top (px -5)
-    , width (px 10)
-    , height (px 10)
+eyeballStyle : Point -> List Style
+eyeballStyle pos =
+    [ position fixed
+    , border3 (px 3) solid (hex "000")
     , borderRadius (pct 50)
-    , backgroundColor (hex "000")
+    , margin4 (px -3) zero zero (px -3)
+    ]
+
+
+circle : Float -> List Style
+circle radius =
+    [ width (px (radius * 2))
+    , height (px (radius * 2))
+    , backgroundColor (hex "fff")
+    , border3 (px 2) solid (hex "000")
+    , borderRadius (pct 50)
+    , margin4 (px -radius) zero zero (px -radius)
     ]

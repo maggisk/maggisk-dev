@@ -2,9 +2,13 @@ module Page.ProjectList exposing (Model, Msg, empty, enter, update, view)
 
 import Api
 import Css exposing (..)
+import Css.Global exposing (descendants, typeSelector)
 import Html.Styled exposing (..)
+import Html.Styled.Attributes exposing (css, href)
 import RemoteData exposing (WebData)
 import Route
+import Snippets
+import Style
 import Util
 
 
@@ -34,23 +38,31 @@ update (GotResponse projects) _ =
 
 view : Model -> Util.StyledDoc Msg
 view model =
-    RemoteData.map viewSuccess model
-        |> Util.handleRemoteFailure
+    let
+        success : List Api.Project -> Util.StyledDoc Msg
+        success projects =
+            { title = "Projects"
+            , body =
+                [ h2 [] [ text "My stupid little pet projects" ]
+                , div [] (List.map project projects)
+                ]
+            }
+
+        project : Api.Project -> Html Msg
+        project p =
+            div []
+                [ a [ css [ Style.prominent ], Route.href (Route.Project p.slug) ] [ text p.title ]
+                , Snippets.projectMeta p
+                , div [ css styleSummary ] [ Util.dangerouslySetInnerHtml p.summary ]
+                ]
+    in
+    RemoteData.map success model |> Util.handleRemoteFailure
 
 
-viewSuccess : List Api.Project -> Util.StyledDoc Msg
-viewSuccess projects =
-    { title = "Projects"
-    , body =
-        [ h2 [] [ text "My stupid little pet projects" ]
-        , div [] (List.map viewProject projects)
+styleSummary : List Style
+styleSummary =
+    [ padding3 (px 5) zero (px 30)
+    , descendants
+        [ typeSelector "p" [ margin zero ]
         ]
-    }
-
-
-viewProject : Api.Project -> Html Msg
-viewProject project =
-    div []
-        [ a [ Route.href (Route.Project project.slug) ] [ text project.title ]
-        , span [] [ Util.dangerouslySetInnerHtml project.summary ]
-        ]
+    ]

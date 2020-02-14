@@ -15,9 +15,16 @@ import Page.Rambling
 import Page.RamblingList
 import Route exposing (Route)
 import Style
+import Task
 import TheDude
 import Url exposing (Url)
-import Util
+import Util exposing (Point)
+
+
+type alias Dimensions =
+    { width : Float
+    , height : Float
+    }
 
 
 type alias Model =
@@ -25,8 +32,8 @@ type alias Model =
     , url : Url
     , route : Maybe Route
     , loading : Bool
-    , window : Maybe Viewport
-    , mousePos : Util.Point
+    , window : Dimensions
+    , mousePos : Point
     , ramblingListPage : Page.RamblingList.Model
     , ramblingPage : Page.Rambling.Model
     , projectListPage : Page.ProjectList.Model
@@ -37,8 +44,8 @@ type alias Model =
 type Msg
     = LinkClicked Browser.UrlRequest
     | UrlChanged Url.Url
-    | MouseMove Util.Point
-    | Resize Int Int
+    | MouseMove Point
+    | SetWindowSize Int Int
     | RamblingListMsg Page.RamblingList.Msg
     | RamblingMsg Page.Rambling.Msg
     | ProjectListMsg Page.ProjectList.Msg
@@ -66,18 +73,29 @@ main =
 
 init : () -> Url -> Nav.Key -> ( Model, Cmd Msg )
 init _ url key =
-    navigate
-        { key = key
-        , url = url
-        , route = Route.fromUrl url
-        , loading = True
-        , window = Nothing
-        , mousePos = Util.Point 0.0 0.0
-        , ramblingListPage = Page.RamblingList.empty
-        , ramblingPage = Page.Rambling.empty
-        , projectListPage = Page.ProjectList.empty
-        , projectPage = Page.Project.empty
-        }
+    let
+        ( model, cmd ) =
+            navigate
+                { key = key
+                , url = url
+                , route = Route.fromUrl url
+                , loading = True
+                , window = Dimensions 0.0 0.0
+                , mousePos = Point 0.0 0.0
+                , ramblingListPage = Page.RamblingList.empty
+                , ramblingPage = Page.Rambling.empty
+                , projectListPage = Page.ProjectList.empty
+                , projectPage = Page.Project.empty
+                }
+
+        getWindowSize =
+            Browser.Dom.getViewport
+                |> Task.perform
+                    (\{ viewport } ->
+                        SetWindowSize (Basics.round viewport.width) (Basics.round viewport.height)
+                    )
+    in
+    ( model, Cmd.batch [ cmd, getWindowSize ] )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -95,8 +113,8 @@ update msg model =
         MouseMove pos ->
             ( { model | mousePos = pos }, Cmd.none )
 
-        Resize _ _ ->
-            ( model, Cmd.none )
+        SetWindowSize width height ->
+            ( { model | window = { width = toFloat width, height = toFloat height } }, Cmd.none )
 
         RamblingListMsg submsg ->
             merge model (RamblingListPage (Page.RamblingList.update submsg model.ramblingListPage))
@@ -114,16 +132,16 @@ update msg model =
 subscriptions : Model -> Sub Msg
 subscriptions _ =
     Sub.batch
-        [ Browser.Events.onMouseMove (Decode.map MouseMove decodeMousePos)
-        , Browser.Events.onResize Resize
+        [ Browser.Events.onResize SetWindowSize
+        , Browser.Events.onMouseMove (Decode.map MouseMove decodeMousePos)
         ]
 
 
-decodeMousePos : Decode.Decoder Util.Point
+decodeMousePos : Decode.Decoder Point
 decodeMousePos =
-    Decode.map2 Util.Point
-        (Decode.field "pageX" Decode.float)
-        (Decode.field "pageY" Decode.float)
+    Decode.map2 Point
+        (Decode.field "clientX" Decode.float)
+        (Decode.field "clientY" Decode.float)
 
 
 navigate : Model -> ( Model, Cmd Msg )
@@ -179,7 +197,7 @@ view model =
         div [ css rootStyle ]
             [ Style.global
             , Header.viewHeader model.url model.route
-            , TheDude.viewTheDude model.mousePos
+            , TheDude.viewTheDude model.mousePos 30.0 { x = model.window.width - 60, y = 45 }
             , div [ css mainStyle ] body
             , viewMouse model.mousePos
             ]
@@ -207,7 +225,7 @@ viewPage model =
             Util.error404
 
 
-viewMouse : Util.Point -> Html Msg
+viewMouse : Point -> Html Msg
 viewMouse pos =
     div
         [ css mouseStyle
@@ -219,9 +237,7 @@ viewMouse pos =
 
 rootStyle : List Style
 rootStyle =
-    [ Css.height (pct 100)
-    , overflow auto
-    ]
+    []
 
 
 mainStyle : List Style
@@ -233,7 +249,7 @@ mainStyle =
 
 mouseStyle : List Style
 mouseStyle =
-    [ position absolute
+    [ position fixed
     , Css.width (px 20)
     , Css.height (px 20)
     , borderRadius (pct 50)

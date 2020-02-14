@@ -14,13 +14,7 @@ MARKDOWN_CONFIG = dict(
         'markdown.extensions.codehilite',
         # allow backticks for code highlighting (e.g. ```python\nprint(1)\n```)
         'markdown.extensions.fenced_code',
-    ],
-    extension_configs = {
-        'markdown.extensions.codehilite': {
-            # inline css so we don't need an external css file
-            'noclasses': True,
-        },
-    }
+    ]
 )
 
 DOCUMENT_TYPES = dict(
@@ -33,8 +27,8 @@ DOCUMENT_TYPES = dict(
     ),
     project=dict(
         directory=os.path.join(DATA_DIR, 'projects'),
-        required_new=['title', 'summary', 'progress', 'proudness'],
-        required_edit=['title', 'summary', 'progress', 'proudness', 'time', 'slug'],
+        required_new=['title', 'link', 'summary', 'progress', 'proudness', 'language'],
+        required_edit=['title', 'link', 'summary', 'progress', 'proudness', 'language', 'time', 'slug'],
         time_fields=['time'],
         markdown_fields=['__body__', 'summary'],
     ),
@@ -115,9 +109,10 @@ def to_json(doc: dict, doc_type: dict, ignore: list = []) -> dict:
     return {k.strip('_'): v for k, v in doc.items()}
 
 
-def shell(cmd: str, *subs):
+def shell(cmd: str, *subs, **options):
     cmd = cmd.format(*[shlex.quote(s) for s in subs])
-    process = subprocess.run(cmd, encoding='utf-8', shell=True, capture_output=True)
+    options = dict({'encoding': 'utf-8', 'shell': True, 'capture_output': True}, **options)
+    process = subprocess.run(cmd, **options)
     process.check_returncode()
     return process.stdout
 
@@ -147,9 +142,9 @@ def edit_document(filename: str, required_fields: list):
 
 
 def new_document(doc_type: dict):
-    with tempfile.NamedTemporaryFile(suffix='.md') as f:
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.md', encoding='utf-8') as f:
         for k in doc_type['required_new']:
-            f.write('* @{} \n'.format(k).encode())
+            f.write('* @{} \n'.format(k))
         f.flush()
         doc = edit_document(f.name, doc_type['required_new'])
     doc.setdefault('slug', slugify(doc['title']))
@@ -168,12 +163,13 @@ def project():
 
 
 def edit():
-    f = shell('find -type file {} | fzf', DATA_DIR)
-    for doc_type in DOCUMENT_TYPES.values():
-        if os.path.dirname(f) == doc_type['dirname']:
-            edit_document(f, doc_type['required_edit'])
-            return
-    abort('Could not detect document type of ' + f)
+    with tempfile.NamedTemporaryFile(mode='r', suffix='.md', encoding='utf-8') as f:
+        # we can't make fzf interactive and capture the output, so we'll write
+        # the output to a tempfile and read it from there
+        shell('cd {} && find -type f | fzf > {}', DATA_DIR, f.name, capture_output=False)
+        filename = os.path.join(DATA_DIR, '\n'.join(f.readlines()).strip('\r\n ./'))
+    doc_type = path_to_doc_type(filename)
+    edit_document(filename, doc_type['required_edit'])
 
 
 def build():
@@ -194,7 +190,8 @@ def build():
 
 
 def preview():
-    pass
+    build()
+    shell('npm run preview', capture_output=False)
 
 
 def main():

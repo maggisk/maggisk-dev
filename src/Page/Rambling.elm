@@ -45,39 +45,37 @@ update (GotResponse slug rambling) model =
 
 view : Model -> String -> Util.StyledDoc Msg
 view model slug =
-    RemoteData.map viewSuccess (getBySlug slug model)
-        |> Util.handleRemoteFailure
-
-
-viewSuccess : Api.Ramble -> Util.StyledDoc Msg
-viewSuccess ramble =
-    { title = ramble.title
-    , body =
-        [ h2 []
-            [ text ramble.title
-            , span [ css subStyle ]
-                [ text <|
-                    DF.format
-                        [ DF.monthNameFull
-                        , DF.text " "
-                        , DF.dayOfMonthSuffix
-                        , DF.text ", "
-                        , DF.yearNumber
+    let
+        success ramble =
+            { title = ramble.title
+            , body =
+                [ h2 []
+                    [ text ramble.title
+                    , span [ css subStyle ]
+                        [ text <|
+                            DF.format
+                                [ DF.monthNameFull
+                                , DF.text " "
+                                , DF.dayOfMonthSuffix
+                                , DF.text ", "
+                                , DF.yearNumber
+                                ]
+                                utc
+                                ramble.time
                         ]
-                        utc
-                        ramble.time
+                    ]
+                , ramble.body
+                    |> Maybe.withDefault "<!-- missing body -->"
+                    |> Util.dangerouslySetInnerHtml
                 ]
-            ]
-        , Util.dangerouslySetInnerHtml (ramble.body |> Maybe.withDefault "<!-- missing body -->")
-        ]
-    }
+            }
+    in
+    getBySlug slug model |> RemoteData.map success |> Util.handleRemoteFailure
 
 
 subStyle : List Style
 subStyle =
-    [ fontSize (px 14)
+    [ Style.subtle
     , display block
-    , color Style.gray
-    , fontWeight normal
     , paddingTop (px 5)
     ]

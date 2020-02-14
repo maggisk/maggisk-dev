@@ -39,50 +39,39 @@ update (GotResponse ramblings) _ =
 
 view : Model -> Util.StyledDoc Msg
 view model =
-    RemoteData.map viewSuccess model
+    let
+        success ramblings =
+            { title = "Ramblings"
+            , body =
+                List.map year (gatherEqualsBy (.time >> Time.toYear Time.utc) ramblings)
+            }
+
+        year ( r, rambles ) =
+            ul [] (List.indexedMap ramble (r :: rambles))
+
+        ramble i r =
+            li [ css style.line ]
+                [ span [ Style.list [ ( [ visibility hidden ], i > 0 ) ] ]
+                    [ text <| DF.format [ DF.yearNumber, DF.text " " ] utc r.time ]
+                , span [ css style.monthDay ]
+                    [ text <| DF.format [ DF.monthNameAbbreviated, DF.text " ", DF.dayOfMonthSuffix ] utc r.time ]
+                , a [ Route.href (Route.Rambling r.slug) ]
+                    [ text r.title ]
+                ]
+    in
+    RemoteData.map success model
         |> Util.handleRemoteFailure
 
 
-viewSuccess : List Api.Ramble -> Util.StyledDoc Msg
-viewSuccess ramblings =
-    { title = "Ramblings"
-    , body =
-        List.map viewYear (gatherEqualsBy (.time >> Time.toYear Time.utc) ramblings)
-    }
-
-
-viewYear : ( Api.Ramble, List Api.Ramble ) -> Html Msg
-viewYear ( r, rambles ) =
-    ul [] (List.indexedMap viewRamble (r :: rambles))
-
-
-viewRamble : Int -> Api.Ramble -> Html Msg
-viewRamble i r =
-    li [ css styleLine ]
-        [ span [ Style.list [ ( styleYear, True ), ( [ visibility hidden ], i > 0 ) ] ]
-            [ text <| DF.format [ DF.yearNumber, DF.text " " ] utc r.time ]
-        , span [ css styleMonthDay ]
-            [ text <| DF.format [ DF.monthNameAbbreviated, DF.text " ", DF.dayOfMonthSuffix ] utc r.time ]
-        , a [ Route.href (Route.Rambling r.slug) ]
-            [ text r.title ]
+style : { line : List Style, monthDay : List Style }
+style =
+    { line =
+        [ Style.prominent
+        , listStyleType none
+        , margin2 (px 15) zero
         ]
-
-
-styleLine : List Style
-styleLine =
-    [ listStyleType none
-    , fontSize (px 24)
-    , margin2 (px 15) zero
-    ]
-
-
-styleYear : List Style
-styleYear =
-    [ fontSize (px 24) ]
-
-
-styleMonthDay : List Style
-styleMonthDay =
-    [ fontSize (px 16)
-    , padding2 zero (px 20)
-    ]
+    , monthDay =
+        [ fontSize (px 16)
+        , padding2 zero (px 20)
+        ]
+    }

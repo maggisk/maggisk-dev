@@ -27,6 +27,20 @@ linkColor =
     hex "#2980b9"
 
 
+prominent : Style
+prominent =
+    fontSize (px 24)
+
+
+subtle : Style
+subtle =
+    batch
+        [ fontSize (px 14)
+        , color gray
+        , fontWeight normal
+        ]
+
+
 list : List ( List Style, Bool ) -> Html.Styled.Attribute msg
 list pairs =
     pairs
@@ -40,9 +54,7 @@ global =
     Global.global
         [ Global.selector "html, body"
             [ fontFamilies [ "'Open Sans'", "sans-serif" ]
-            , overflow hidden
             , margin zero
-            , height (pct 100)
             , padding zero
             , fontSize (px 18)
             , lineHeight (pct 150)
@@ -52,6 +64,7 @@ global =
         , Global.selector "*"
             [ padding zero
             , margin zero
+            , boxSizing borderBox
             ]
         , Global.selector "h1, h2, h3, h4, h5, h6"
             [ fontFamilies [ "'Proza Libre'", "sans-serif" ]

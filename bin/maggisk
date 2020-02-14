@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
-cd $(dirname "$0")
-cd ..
+cd $(dirname $(dirname "$0"))
 
 if [ -d venv ]; then
     source venv/bin/activate
@@ -13,5 +12,4 @@ else
     pip install -r requirements.txt
 fi
 
-set -x
-python admin.py "$@"
+python admin.py "$@" --verbose

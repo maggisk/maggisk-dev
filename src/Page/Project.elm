@@ -4,6 +4,7 @@ import Api
 import Dict exposing (Dict)
 import Html.Styled exposing (..)
 import RemoteData exposing (WebData)
+import Snippets
 import Util
 
 
@@ -40,15 +41,18 @@ update (GotResponse slug project) model =
 
 view : Model -> String -> Util.StyledDoc Msg
 view model slug =
-    RemoteData.map viewSuccess (getBySlug slug model)
-        |> Util.handleRemoteFailure
-
-
-viewSuccess : Api.Project -> Util.StyledDoc Msg
-viewSuccess project =
-    { title = project.title
-    , body =
-        [ h2 [] [ text project.title ]
-        , Util.dangerouslySetInnerHtml (project.body |> Maybe.withDefault "<!-- missing body -->")
-        ]
-    }
+    let
+        success project =
+            { title = project.title
+            , body =
+                [ h2 []
+                    [ text project.title
+                    , Snippets.projectMeta project
+                    ]
+                , project.body
+                    |> Maybe.withDefault "<!-- missing body -->"
+                    |> Util.dangerouslySetInnerHtml
+                ]
+            }
+    in
+    getBySlug slug model |> RemoteData.map success |> Util.handleRemoteFailure
