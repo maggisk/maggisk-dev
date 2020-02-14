@@ -1,11 +1,11 @@
 module Main exposing (main)
 
-import Api
 import Browser
 import Browser.Dom exposing (Viewport)
 import Browser.Events
 import Browser.Navigation as Nav
 import Css exposing (..)
+import Header
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Json.Decode as Decode
@@ -38,6 +38,7 @@ type Msg
     = LinkClicked Browser.UrlRequest
     | UrlChanged Url.Url
     | MouseMove Util.Point
+    | Resize Int Int
     | RamblingListMsg Page.RamblingList.Msg
     | RamblingMsg Page.Rambling.Msg
     | ProjectListMsg Page.ProjectList.Msg
@@ -94,6 +95,9 @@ update msg model =
         MouseMove pos ->
             ( { model | mousePos = pos }, Cmd.none )
 
+        Resize _ _ ->
+            ( model, Cmd.none )
+
         RamblingListMsg submsg ->
             merge model (RamblingListPage (Page.RamblingList.update submsg model.ramblingListPage))
 
@@ -108,8 +112,11 @@ update msg model =
 
 
 subscriptions : Model -> Sub Msg
-subscriptions model =
-    Browser.Events.onMouseMove (Decode.map MouseMove decodeMousePos)
+subscriptions _ =
+    Sub.batch
+        [ Browser.Events.onMouseMove (Decode.map MouseMove decodeMousePos)
+        , Browser.Events.onResize Resize
+        ]
 
 
 decodeMousePos : Decode.Decoder Util.Point
@@ -123,16 +130,16 @@ navigate : Model -> ( Model, Cmd Msg )
 navigate model =
     case model.route of
         Just Route.RamblingList ->
-            merge model (RamblingListPage (Page.RamblingList.init model.ramblingListPage))
+            merge model (RamblingListPage (Page.RamblingList.enter model.ramblingListPage))
 
         Just (Route.Rambling slug) ->
-            merge model (RamblingPage (Page.Rambling.init model.ramblingPage slug))
+            merge model (RamblingPage (Page.Rambling.enter model.ramblingPage slug))
 
         Just Route.ProjectList ->
-            merge model (ProjectListPage (Page.ProjectList.init model.projectListPage))
+            merge model (ProjectListPage (Page.ProjectList.enter model.projectListPage))
 
         Just (Route.Project slug) ->
-            merge model (ProjectPage (Page.Project.init model.projectPage slug))
+            merge model (ProjectPage (Page.Project.enter model.projectPage slug))
 
         Nothing ->
             ( model, Cmd.none )
@@ -169,11 +176,11 @@ view model =
     in
     { title = title ++ " |> maggisk"
     , body =
-        div [ css Style.root ]
+        div [ css rootStyle ]
             [ Style.global
-            , viewHeader model.url model.route
+            , Header.viewHeader model.url model.route
             , TheDude.viewTheDude model.mousePos
-            , div [ css Style.main_ ] body
+            , div [ css mainStyle ] body
             , viewMouse model.mousePos
             ]
             |> toUnstyled
@@ -200,44 +207,37 @@ viewPage model =
             Util.error404
 
 
-viewHeader : Url -> Maybe Route -> Html Msg
-viewHeader url route =
-    header [ css Style.header ]
-        [ h1 [ css Style.headerTitle ]
-            [ text "Ramblings of a software developer"
-            , br [] []
-            , span [] [ text "|> Maggisk.dev" ]
-            ]
-        , div [ css Style.headerLinks ] <|
-            List.map viewLink
-                [ ( "Ramblings", Route.RamblingList, isMatch url route "/" "/ramble/" )
-                , ( "Projects", Route.ProjectList, isMatch url route "/projects" "/projects/" )
-                ]
-        ]
-
-
-isMatch : Url -> Maybe Route -> String -> String -> Bool
-isMatch { path } route exact prefix =
-    route /= Nothing && (path == exact || String.startsWith prefix path)
-
-
-viewLink : ( String, Route, Bool ) -> Html Msg
-viewLink ( title, route, selected ) =
-    a
-        [ Route.href route
-        , Style.list
-            [ ( Style.headerLink, True )
-            , ( Style.headerLinkSelected, selected )
-            ]
-        ]
-        [ text title ]
-
-
 viewMouse : Util.Point -> Html Msg
 viewMouse pos =
     div
-        [ css Style.mouse
+        [ css mouseStyle
         , style "left" (String.fromFloat pos.x ++ "px")
         , style "top" (String.fromFloat pos.y ++ "px")
         ]
         []
+
+
+rootStyle : List Style
+rootStyle =
+    [ Css.height (pct 100)
+    , overflow auto
+    ]
+
+
+mainStyle : List Style
+mainStyle =
+    [ maxWidth (px 800)
+    , margin3 (px 30) auto zero
+    ]
+
+
+mouseStyle : List Style
+mouseStyle =
+    [ position absolute
+    , Css.width (px 20)
+    , Css.height (px 20)
+    , borderRadius (pct 50)
+    , margin4 (px -10) zero zero (px -10)
+    , backgroundColor (rgba 100 40 255 0.2)
+    , pointerEvents none
+    ]

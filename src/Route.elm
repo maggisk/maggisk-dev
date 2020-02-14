@@ -1,6 +1,6 @@
-module Route exposing (Route(..), default, fromUrl, href, match, toUrl)
+module Route exposing (Route(..), default, fromUrl, href, toUrl)
 
-import Html.Styled exposing (Attribute)
+import Html.Styled
 import Html.Styled.Attributes
 import Url exposing (Url)
 import Url.Parser as Parser exposing ((</>), Parser, map, oneOf, s, string)
@@ -57,22 +57,3 @@ toUrl route =
 fromUrl : Url -> Maybe Route
 fromUrl url =
     Parser.parse parser url
-
-
-match : Route -> Route -> Bool
-match a b =
-    case ( a, b ) of
-        ( RamblingList, RamblingList ) ->
-            True
-
-        ( Rambling _, Rambling _ ) ->
-            True
-
-        ( ProjectList, ProjectList ) ->
-            True
-
-        ( Project _, Project _ ) ->
-            True
-
-        _ ->
-            False

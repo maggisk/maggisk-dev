@@ -1,13 +1,15 @@
-module Page.RamblingList exposing (Model, Msg, empty, init, update, view)
+module Page.RamblingList exposing (Model, Msg, empty, enter, update, view)
 
 import Api
 import Css exposing (..)
+import DateFormat as DF
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (css)
 import List.Extra exposing (gatherEqualsBy)
 import RemoteData exposing (WebData)
 import Route
-import Time
+import Style
+import Time exposing (utc)
 import Util
 
 
@@ -24,14 +26,14 @@ empty =
     RemoteData.NotAsked
 
 
-init : Model -> ( Model, Cmd Msg )
-init model =
+enter : Model -> ( Model, Cmd Msg )
+enter model =
     Util.initIfNeeded model model RemoteData.Loading <|
         Api.allRamblings (RemoteData.fromResult >> GotResponse)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
-update (GotResponse ramblings) model =
+update (GotResponse ramblings) _ =
     ( ramblings, Cmd.none )
 
 
@@ -51,21 +53,17 @@ viewSuccess ramblings =
 
 viewYear : ( Api.Ramble, List Api.Ramble ) -> Html Msg
 viewYear ( r, rambles ) =
-    div []
-        [ h2 [] [ text <| String.fromInt <| Time.toYear Time.utc r.time ]
-        , div [] (List.map viewRamble (r :: rambles))
-        ]
+    ul [] (List.indexedMap viewRamble (r :: rambles))
 
 
-viewRamble : Api.Ramble -> Html Msg
-viewRamble r =
+viewRamble : Int -> Api.Ramble -> Html Msg
+viewRamble i r =
     li [ css styleLine ]
-        [ span [ css styleDate ]
-            [ span [] [ text <| Util.shortMonthName <| Time.toMonth Time.utc r.time ]
-            , span [] [ text " " ]
-            , span [] [ text <| Util.ordinal (Time.toDay Time.utc r.time) ]
-            ]
-        , a [ Route.href (Route.Rambling r.slug), css styleLink ]
+        [ span [ Style.list [ ( styleYear, True ), ( [ visibility hidden ], i > 0 ) ] ]
+            [ text <| DF.format [ DF.yearNumber, DF.text " " ] utc r.time ]
+        , span [ css styleMonthDay ]
+            [ text <| DF.format [ DF.monthNameAbbreviated, DF.text " ", DF.dayOfMonthSuffix ] utc r.time ]
+        , a [ Route.href (Route.Rambling r.slug) ]
             [ text r.title ]
         ]
 
@@ -78,15 +76,13 @@ styleLine =
     ]
 
 
-styleLink : List Style
-styleLink =
-    [ textDecoration none
-    ]
+styleYear : List Style
+styleYear =
+    [ fontSize (px 24) ]
 
 
-styleDate : List Style
-styleDate =
+styleMonthDay : List Style
+styleMonthDay =
     [ fontSize (px 16)
-    , display inlineBlock
-    , paddingRight (px 20)
+    , padding2 zero (px 20)
     ]

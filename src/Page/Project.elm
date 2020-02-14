@@ -1,4 +1,4 @@
-module Page.Project exposing (Model, Msg, empty, init, update, view)
+module Page.Project exposing (Model, Msg, empty, enter, update, view)
 
 import Api
 import Dict exposing (Dict)
@@ -25,8 +25,8 @@ getBySlug slug ramblings =
     Dict.get slug ramblings |> Maybe.withDefault RemoteData.NotAsked
 
 
-init : Model -> String -> ( Model, Cmd Msg )
-init model slug =
+enter : Model -> String -> ( Model, Cmd Msg )
+enter model slug =
     Util.initIfNeeded model
         (getBySlug slug model)
         (Dict.insert slug RemoteData.Loading model)

@@ -7,12 +7,24 @@ import Html.Styled exposing (Html)
 import Html.Styled.Attributes exposing (css)
 
 
+white : Color
 white =
     hex "#ecf0f1"
 
 
+dark : Color
 dark =
     hex "#2c3e50"
+
+
+gray : Color
+gray =
+    hex "#979daf"
+
+
+linkColor : Color
+linkColor =
+    hex "#2980b9"
 
 
 list : List ( List Style, Bool ) -> Html.Styled.Attribute msg
@@ -49,7 +61,7 @@ global =
             [ margin2 (px 25) zero
             ]
         , Global.selector "a"
-            [ color (hex "#2980b9")
+            [ color linkColor
             , textDecoration none
             , Css.Transitions.transition
                 [ Css.Transitions.backgroundColor 200
@@ -57,14 +69,14 @@ global =
                 ]
             , hover
                 [ color (hex "fff")
-                , backgroundColor (hex "2989b9")
+                , backgroundColor linkColor
                 ]
             ]
         , Global.selector "li"
             [ listStylePosition inside
             ]
         , Global.selector "code"
-            [ backgroundColor (hex "#fcf7cf")
+            [ backgroundColor (hex "#fcfcfc")
             ]
         , Global.selector "pre code"
             [ display block
@@ -74,74 +86,3 @@ global =
             , fontSize (px 16)
             ]
         ]
-
-
-root : List Style
-root =
-    [ height (pct 100)
-    , overflow auto
-    ]
-
-
-header : List Style
-header =
-    [ textAlign center
-    , color white
-    , backgroundColor dark
-    ]
-
-
-headerTitle : List Style
-headerTitle =
-    [ margin zero
-    , padding (px 28)
-    , pointerEvents none
-    , fontFamily monospace
-    , fontSize (px 16)
-    ]
-
-
-headerLinks : List Style
-headerLinks =
-    [ paddingBottom (px 20)
-    ]
-
-
-headerLink : List Style
-headerLink =
-    [ display inlineBlock
-    , padding (px 5)
-    , margin2 (px 0) (px 10)
-    , color white
-    , fontSize (px 20)
-    , textDecoration none
-    , hover
-        [ batch headerLinkSelected
-        , backgroundColor transparent
-        ]
-    ]
-
-
-headerLinkSelected : List Style
-headerLinkSelected =
-    [ borderBottom3 (px 1) solid white
-    ]
-
-
-main_ : List Style
-main_ =
-    [ maxWidth (px 800)
-    , margin3 (px 30) auto zero
-    ]
-
-
-mouse : List Style
-mouse =
-    [ position absolute
-    , width (px 20)
-    , height (px 20)
-    , borderRadius (pct 50)
-    , margin4 (px -10) zero zero (px -10)
-    , backgroundColor (rgba 100 40 255 0.2)
-    , pointerEvents none
-    ]

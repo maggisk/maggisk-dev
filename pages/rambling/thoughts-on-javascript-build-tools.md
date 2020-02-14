@@ -1,10 +1,10 @@
 * @title thoughts on javascript build tools
 * @slug thoughts-on-javascript-build-tools
-* @time 2020-02-12 14:45
+* @time 2020-02-13 14:45
 
-I don't think anyone likes javascript build tools. They are complex and frustrating to deal with.
+Does anyone like javascript build tools? They are so complex and frustrating to deal with.
 
-I love the idea of [parcel](https://parceljs.org/) and in theory you should be able to create an amazing build tool like that. But in practice, I think parcel just plain sucks. It is so full of bugs it is barely usable for a serious project. [Version 2](https://medium.com/@devongovett/parcel-2-0-0-alpha-1-is-here-8b160c6e3f7e) is on the way, but I've never been able to get it to work, and I believe I'm not the only one.
+[Parcel](https://parceljs.org/) is a fantastic idea and in theory you should be able to create an amazing build tool like that. But unfortunately, in practice, parcel sucks. It is so full of bugs it is barely usable for a serious project. [Version 2](https://medium.com/@devongovett/parcel-2-0-0-alpha-1-is-here-8b160c6e3f7e) is on the way, but I've never been able to get it to work, and I believe I'm not the only one.
 
 Why are javascript build tools so complex? Isn't most of the complexity coming from importing non-javascript files from javascript. Is that complexity worth it? What if we stop the abomination that is importing images, css files etc. from javascript. Couldn't we hugely simplify our build process?
 
@@ -16,7 +16,7 @@ What I want from my build tool is:
 * offer the ability to watch files for changes and re-run commands when they change
 * development webserver with support for live reloading of at least css changes
 
-You can kind of set this up yourself using multiple different npm packages, but it takes a bit of work.
+You can get a decent setup like that using a few different npm packages.
  
 * [chokidar](https://github.com/paulmillr/chokidar) for watching files.
 * [npm-run-all](https://www.npmjs.com/package/npm-run-all) for running multiple commands in parallel in the same terminal window.
@@ -41,6 +41,6 @@ Your package.json scripts field might look something like this (untested, probab
 }
 ```
 
-It's not perfect. You loose all coloring from your build commands for example. I'm also probably overlooking some webpack feature that can't be replaced like this. Code splitting might be one, but if you're using something like [Elm](https://elm-lang.org/) or [Svelte](https://svelte.dev/) the output is so tiny compared to React/Vue/Angular that it doesn't really matter.
+It's not perfect. You loose all coloring from your build commands for example. I'm also probably overlooking some webpack feature that can't be replaced like this. Code splitting comes to mind, but if you're using something like [Elm](https://elm-lang.org/) or [Svelte](https://svelte.dev/) the output is so tiny compared to React/Vue/Angular that it doesn't really matter.
 
-There are some issues left, like combining your plain-javascript and elm-generated-javascript into a single file, but this is the build setup that I'm going to strive for from now on.
+There are some issues left, like combining your babel-generated-javascript and elm-generated-javascript into a single file, but this is the build setup that I'm going to strive for from now on.

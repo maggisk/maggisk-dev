@@ -4,7 +4,7 @@ import os, sys, typing, json, datetime, re, operator, shlex, subprocess, tempfil
 from markdown import markdown
 
 ROOT_DIR: str    = os.path.dirname(os.path.abspath(__file__))
-DATA_DIR: str    = os.path.join(ROOT_DIR, 'data')
+DATA_DIR: str    = os.path.join(ROOT_DIR, 'pages')
 API_DIR: str     = os.path.join(ROOT_DIR, 'static', 'api')
 DATE_FORMAT: str = "%Y-%m-%d %H:%M"
 
@@ -139,7 +139,7 @@ def edit_document(filename: str, required_fields: list):
         editor(filename)
         doc = read_file(filename)
         for k in required_fields:
-            if k not in meta:
+            if k not in doc:
                 input('Your document must have an @{}. Lets try that again...'.format(k))
                 break
         else:

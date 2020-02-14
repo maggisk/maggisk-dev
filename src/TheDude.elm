@@ -10,8 +10,9 @@ viewTheDude : Point -> Html msg
 viewTheDude mousePos =
     div []
         [ div [ css dudeStyle ] []
-        , viewEye 60 90 mousePos
-        , viewEye 140 90 mousePos
+
+        -- , viewEye 60 90 mousePos
+        -- , viewEye 140 90 mousePos
         ]
 
 
@@ -42,13 +43,13 @@ eyeballDistance x y mouse =
 dudeStyle : List Style
 dudeStyle =
     [ position absolute
-    , top (px 25)
-    , left (px 25)
+    , top (px 15)
+    , right (px 15)
     , backgroundImage (url "/dude.png")
     , backgroundSize contain
     , backgroundRepeat noRepeat
-    , Css.width (px 150)
-    , Css.height (px 150)
+    , Css.width (px 80)
+    , Css.height (px 80)
     ]
 
 
