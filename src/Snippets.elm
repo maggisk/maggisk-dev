@@ -14,9 +14,9 @@ projectMeta p =
         [ a [ css (styleSubtle ++ styleSubtleLink), href p.link ]
             [ text (domain p.link) ]
         , span [ css styleSubtle ]
-            [ text <| "language: " ++ p.language ]
+            [ text <| "Written in " ++ p.language ]
         , span [ css styleSubtle ]
-            [ text <| "progress: " ++ String.fromInt p.progress ++ "%" ]
+            [ text <| String.fromInt p.progress ++ "% done" ]
 
         -- , span [ css styleSubtle ]
         --     [ text <| "pleased: " ++ String.fromInt p.proudness ++ "/10" ]
