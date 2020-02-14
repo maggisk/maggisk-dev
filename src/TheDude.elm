@@ -1,13 +1,14 @@
 module TheDude exposing (viewTheDude)
 
 import Css exposing (..)
+import Css.Transitions exposing (transition)
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (css, id, style)
 import Util exposing (Point)
 
 
-viewTheDude : Point -> Float -> Point -> Html msg
-viewTheDude mouse headRadius center =
+viewTheDude : Point -> Float -> Point -> Bool -> Html msg
+viewTheDude mouse headRadius center surprised =
     let
         eyeRadius =
             headRadius * 0.6
@@ -17,13 +18,30 @@ viewTheDude mouse headRadius center =
 
         rEye =
             { x = center.x + (headRadius * 0.6), y = center.y + headRadius * 0.1 }
+
+        mouthPos =
+            { x = (lEye.x + rEye.x) / 2, y = center.y + headRadius * 0.65 }
     in
     div []
-        [ div [ css (headStyle headRadius center) ] []
-        , div [ css (eyeStyle eyeRadius lEye) ] []
-        , div [ css (eyeStyle eyeRadius rEye) ] []
+        [ head headRadius center
+        , glasses eyeRadius lEye rEye
         , eyeball eyeRadius mouse lEye
         , eyeball eyeRadius mouse rEye
+        , mouth surprised mouthPos
+        ]
+
+
+head : Float -> Point -> Html msg
+head radius center =
+    div [ css (circle radius ++ setPosition center) ] []
+
+
+glasses : Float -> Point -> Point -> Html msg
+glasses eyeRadius l r =
+    div []
+        [ div [ css (circle eyeRadius ++ setPosition { x = l.x + eyeRadius, y = l.y } ++ [ height (px 0) ]) ] []
+        , div [ css (circle eyeRadius ++ setPosition l) ] []
+        , div [ css (circle eyeRadius ++ setPosition r) ] []
         ]
 
 
@@ -38,38 +56,40 @@ eyeball eyeRadius mouse center =
             atan2 (mouse.y - center.y) (mouse.x - center.x)
     in
     div
-        [ css (eyeballStyle center)
-        , style "left" (String.fromFloat (center.x + (cos angle * distance)) ++ "px")
-        , style "top" (String.fromFloat (center.y + (sin angle * distance)) ++ "px")
+        [ css
+            [ position fixed
+            , border3 (px 3) solid (hex "000")
+            , borderRadius (pct 50)
+            , margin4 (px -3) zero zero (px -3)
+            ]
+        , style "left" (String.fromFloat center.x ++ "px")
+        , style "top" (String.fromFloat center.y ++ "px")
+        , style "transform" <|
+            String.join " "
+                [ "translateX(" ++ String.fromFloat (cos angle * distance) ++ "px)"
+                , "translateY(" ++ String.fromFloat (sin angle * distance) ++ "px)"
+                ]
         ]
         []
 
 
-headStyle : Float -> Point -> List Style
-headStyle radius center =
-    [ batch (circle radius)
-    , position fixed
-    , top (px center.y)
-    , left (px center.x)
-    ]
+mouth : Bool -> Point -> Html msg
+mouth surprised pos =
+    let
+        transitions =
+            transition
+                [ Css.Transitions.height 100
+                , Css.Transitions.width 100
+                ]
 
+        openState =
+            if surprised then
+                []
 
-eyeStyle : Float -> Point -> List Style
-eyeStyle radius center =
-    [ batch (circle radius)
-    , position fixed
-    , left (px center.x)
-    , top (px center.y)
-    ]
-
-
-eyeballStyle : Point -> List Style
-eyeballStyle pos =
-    [ position fixed
-    , border3 (px 3) solid (hex "000")
-    , borderRadius (pct 50)
-    , margin4 (px -3) zero zero (px -3)
-    ]
+            else
+                [ height (px 0), width (px 10) ]
+    in
+    div [ css (transitions :: circle 7 ++ setPosition pos ++ openState) ] []
 
 
 circle : Float -> List Style
@@ -79,5 +99,13 @@ circle radius =
     , backgroundColor (hex "fff")
     , border3 (px 2) solid (hex "000")
     , borderRadius (pct 50)
-    , margin4 (px -radius) zero zero (px -radius)
+    , transform (translate2 (pct -50) (pct -50))
+    ]
+
+
+setPosition : Point -> List Style
+setPosition { x, y } =
+    [ position fixed
+    , left (px x)
+    , top (px y)
     ]

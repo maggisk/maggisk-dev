@@ -43,7 +43,7 @@ view model =
         success projects =
             { title = "Projects"
             , body =
-                [ h2 [] [ text "My stupid little pet projects" ]
+                [ h2 [] [ text "My dorky little pet projects" ]
                 , div [] (List.map project projects)
                 ]
             }

@@ -13,6 +13,7 @@ import Page.Project
 import Page.ProjectList
 import Page.Rambling
 import Page.RamblingList
+import Ports
 import Route exposing (Route)
 import Style
 import Task
@@ -34,6 +35,7 @@ type alias Model =
     , loading : Bool
     , window : Dimensions
     , mousePos : Point
+    , linkHover : Bool
     , ramblingListPage : Page.RamblingList.Model
     , ramblingPage : Page.Rambling.Model
     , projectListPage : Page.ProjectList.Model
@@ -46,6 +48,7 @@ type Msg
     | UrlChanged Url.Url
     | MouseMove Point
     | SetWindowSize Int Int
+    | LinkHover Bool
     | RamblingListMsg Page.RamblingList.Msg
     | RamblingMsg Page.Rambling.Msg
     | ProjectListMsg Page.ProjectList.Msg
@@ -82,6 +85,7 @@ init _ url key =
                 , loading = True
                 , window = Dimensions 0.0 0.0
                 , mousePos = Point 0.0 0.0
+                , linkHover = False
                 , ramblingListPage = Page.RamblingList.empty
                 , ramblingPage = Page.Rambling.empty
                 , projectListPage = Page.ProjectList.empty
@@ -102,7 +106,9 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         LinkClicked (Browser.Internal url) ->
-            ( model, Nav.pushUrl model.key (Url.toString url) )
+            ( { model | linkHover = False }
+            , Nav.pushUrl model.key (Url.toString url)
+            )
 
         LinkClicked (Browser.External href) ->
             ( model, Nav.load href )
@@ -115,6 +121,9 @@ update msg model =
 
         SetWindowSize width height ->
             ( { model | window = { width = toFloat width, height = toFloat height } }, Cmd.none )
+
+        LinkHover hovering ->
+            ( { model | linkHover = hovering }, Cmd.none )
 
         RamblingListMsg submsg ->
             merge model (RamblingListPage (Page.RamblingList.update submsg model.ramblingListPage))
@@ -134,6 +143,7 @@ subscriptions _ =
     Sub.batch
         [ Browser.Events.onResize SetWindowSize
         , Browser.Events.onMouseMove (Decode.map MouseMove decodeMousePos)
+        , Ports.linkHover LinkHover
         ]
 
 
@@ -194,10 +204,14 @@ view model =
     in
     { title = title ++ " |> maggisk"
     , body =
-        div [ css rootStyle ]
+        div []
             [ Style.global
             , Header.viewHeader model.url model.route
-            , TheDude.viewTheDude model.mousePos 30.0 { x = model.window.width - 60, y = 45 }
+            , TheDude.viewTheDude
+                model.mousePos
+                30.0
+                { x = model.window.width - 60, y = 45 }
+                model.linkHover
             , div [ css mainStyle ] body
             , viewMouse model.mousePos
             ]
@@ -235,11 +249,6 @@ viewMouse pos =
         []
 
 
-rootStyle : List Style
-rootStyle =
-    []
-
-
 mainStyle : List Style
 mainStyle =
     [ maxWidth (px 800)
@@ -254,6 +263,6 @@ mouseStyle =
     , Css.height (px 20)
     , borderRadius (pct 50)
     , margin4 (px -10) zero zero (px -10)
-    , backgroundColor (rgba 100 40 255 0.2)
+    , backgroundColor (rgba 100 255 255 0.2)
     , pointerEvents none
     ]
