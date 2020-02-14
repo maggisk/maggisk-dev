@@ -89,7 +89,7 @@ global =
             [ listStylePosition inside
             ]
         , Global.selector "code"
-            [ backgroundColor (hex "#fcfcfc")
+            [ backgroundColor (rgba 244 224 77 0.25)
             ]
         , Global.selector "pre code"
             [ display block

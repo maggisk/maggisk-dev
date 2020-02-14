@@ -263,6 +263,6 @@ mouseStyle =
     , Css.height (px 20)
     , borderRadius (pct 50)
     , margin4 (px -10) zero zero (px -10)
-    , backgroundColor (rgba 100 255 255 0.2)
+    , backgroundColor (rgba 244 224 77 0.25)
     , pointerEvents none
     ]
