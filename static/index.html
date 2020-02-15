@@ -5,37 +5,10 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans|Proza+Libre&display=swap" rel="stylesheet">
+        <link href="/css/app.css" rel="stylesheet">
     </head>
     <body>
-        <div id="root"></div>
-        <script type="text/javascript" src="/app.js"></script>
-        <script type="text/javascript">
-            if (window.customElements) {
-                customElements.define(
-                    "elm-innerhtml",
-                    class ElmInnerHTML extends HTMLElement {
-                        static get observedAttributes() {
-                            return ["html"];
-                        }
-
-                        attributeChangedCallback(name, oldValue, newValue) {
-                            this.innerHTML = newValue;
-                        }
-                    }
-                );
-            }
-
-            var app = Elm.Main.init(document.querySelector('#root'));
-
-            document.body.addEventListener('mouseover', function(e) {
-                if (e.target.tagName == 'A')
-                    app.ports.linkHover.send(true);
-            });
-            document.body.addEventListener('mouseout', function(e) {
-                if (e.target.tagName == 'A')
-                    app.ports.linkHover.send(false);
-            });
-        </script>
-        <link href="/hilite.min.css" rel="stylesheet">
+        <script type="text/javascript" src="/js/elm.js"></script>
+        <script type="text/javascript" src="/js/app.js"></script>
     </body>
 </html>

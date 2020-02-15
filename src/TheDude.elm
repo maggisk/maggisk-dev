@@ -3,7 +3,7 @@ module TheDude exposing (viewTheDude)
 import Css exposing (..)
 import Css.Transitions exposing (transition)
 import Html.Styled exposing (..)
-import Html.Styled.Attributes exposing (css, id, style)
+import Html.Styled.Attributes exposing (css, style)
 import Util exposing (Point)
 
 
