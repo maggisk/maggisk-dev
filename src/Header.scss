@@ -1,0 +1,60 @@
+@use "conf";
+
+.Header {
+    text-align: center;
+    background-color: conf.$dark;
+    display: flex;
+    justify-content: space-evenly;
+
+    &, & * {
+        color: conf.$white;
+    }
+
+    & a:hover {
+        background: transparent;
+    }
+
+    &_section {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        padding: 20px;
+
+        &--left {
+            text-align: left;
+            padding: 20px;
+        }
+
+        &--center {
+            justify-content: flex-end;
+        }
+    }
+
+    &_title {
+        margin: 0;
+        font-size: 22px;
+    }
+
+    &_tab {
+        padding: 5px;
+        margin: 0 10px;
+        font-size: 20px;
+        display: inline-block;
+
+        &:hover {
+            background-color: transparent;
+        }
+
+        &--selected {
+            border-bottom: 2px solid conf.$white;
+        }
+    }
+
+    &_summary {
+        font-size: 14px;
+    }
+
+    &_code {
+        font-family: monospace;
+    }
+}

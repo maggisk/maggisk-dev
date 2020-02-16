@@ -1,0 +1,18 @@
+@use "../conf";
+
+.RamblingList {
+    &_line {
+        @include conf.prominent;
+        list-style-type: none;
+        margin: 15px 0;
+    }
+
+    &_monthDay {
+        font-size: 16px;
+        padding: 0 20px;
+    }
+
+    &_hidden {
+        visibility: hidden;
+    }
+}

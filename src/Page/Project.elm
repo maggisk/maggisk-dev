@@ -1,8 +1,9 @@
 module Page.Project exposing (Model, Msg, empty, enter, update, view)
 
 import Api
+import Browser exposing (Document)
 import Dict exposing (Dict)
-import Html.Styled exposing (..)
+import Html exposing (..)
 import RemoteData exposing (WebData)
 import Snippets
 import Util
@@ -39,7 +40,7 @@ update (GotResponse slug project) model =
     ( Dict.insert slug project model, Cmd.none )
 
 
-view : Model -> String -> Util.StyledDoc Msg
+view : Model -> String -> Document Msg
 view model slug =
     let
         success project =

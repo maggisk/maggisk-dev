@@ -1,14 +1,12 @@
 module Page.ProjectList exposing (Model, Msg, empty, enter, update, view)
 
 import Api
-import Css exposing (..)
-import Css.Global exposing (descendants, typeSelector)
-import Html.Styled exposing (..)
-import Html.Styled.Attributes exposing (css, href)
+import Browser exposing (Document)
+import Html exposing (..)
+import Html.Attributes exposing (class, href)
 import RemoteData exposing (WebData)
 import Route
 import Snippets
-import Style
 import Util
 
 
@@ -36,10 +34,9 @@ update (GotResponse projects) _ =
     ( projects, Cmd.none )
 
 
-view : Model -> Util.StyledDoc Msg
+view : Model -> Document Msg
 view model =
     let
-        success : List Api.Project -> Util.StyledDoc Msg
         success projects =
             { title = "Projects"
             , body =
@@ -48,21 +45,11 @@ view model =
                 ]
             }
 
-        project : Api.Project -> Html Msg
         project p =
             div []
-                [ a [ css [ Style.prominent ], Route.href (Route.Project p.slug) ] [ text p.title ]
+                [ a [ class "ProjectList_title", Route.href (Route.Project p.slug) ] [ text p.title ]
                 , Snippets.projectMeta p
-                , div [ css styleSummary ] [ Util.dangerouslySetInnerHtml p.summary ]
+                , div [ class "ProjectList_summary" ] [ Util.dangerouslySetInnerHtml p.summary ]
                 ]
     in
     RemoteData.map success model |> Util.handleRemoteFailure
-
-
-styleSummary : List Style
-styleSummary =
-    [ padding3 (px 5) zero (px 30)
-    , descendants
-        [ typeSelector "p" [ margin zero ]
-        ]
-    ]

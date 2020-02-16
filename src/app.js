@@ -18,14 +18,4 @@ customElements.define(
   }
 );
 
-var app = Elm.Main.init();
-
-document.body.addEventListener('mouseover', function(e) {
-    if (e.target.tagName == 'A')
-        app.ports.linkHover.send(true);
-});
-
-document.body.addEventListener('mouseout', function(e) {
-    if (e.target.tagName == 'A')
-        app.ports.linkHover.send(false);
-});
+Elm.Main.init();

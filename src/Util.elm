@@ -1,15 +1,10 @@
 module Util exposing (..)
 
-import Html.Styled exposing (..)
-import Html.Styled.Attributes exposing (attribute)
+import Browser exposing (Document)
+import Html exposing (..)
+import Html.Attributes exposing (attribute)
 import Http
 import RemoteData exposing (RemoteData, WebData)
-
-
-type alias StyledDoc msg =
-    { title : String
-    , body : List (Html msg)
-    }
 
 
 type alias Point =
@@ -37,7 +32,7 @@ initIfNeeded currentModel data newModel cmd =
         ( currentModel, Cmd.none )
 
 
-handleRemoteFailure : WebData (StyledDoc msg) -> StyledDoc msg
+handleRemoteFailure : WebData (Document msg) -> Document msg
 handleRemoteFailure data =
     case data of
         RemoteData.Failure (Http.BadStatus 404) ->
@@ -59,7 +54,7 @@ handleRemoteFailure data =
             doc
 
 
-error404 : StyledDoc msg
+error404 : Document msg
 error404 =
     { title = "Not Found"
     , body =
@@ -69,17 +64,17 @@ error404 =
     }
 
 
-error500 : StyledDoc msg
+error500 : Document msg
 error500 =
     { title = "Whoops"
     , body =
-        [ h2 [] [ text "Whoops - error occured" ]
+        [ h2 [] [ text "Whoops - that's an error" ]
         , div [] [ text "Sorry :(" ]
         ]
     }
 
 
-loading : StyledDoc msg
+loading : Document msg
 loading =
     -- loading should be fast enough for this to be barely noticable
     { title = ""

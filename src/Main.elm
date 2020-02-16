@@ -1,23 +1,19 @@
 module Main exposing (main)
 
-import Browser
-import Browser.Dom exposing (Viewport)
+import Browser exposing (Document)
+import Browser.Dom
 import Browser.Events
 import Browser.Navigation as Nav
-import Css exposing (..)
 import Header
-import Html.Styled exposing (..)
-import Html.Styled.Attributes exposing (..)
+import Html exposing (..)
+import Html.Attributes exposing (..)
 import Json.Decode as Decode
 import Page.Project
 import Page.ProjectList
 import Page.Rambling
 import Page.RamblingList
-import Ports
 import Route exposing (Route)
-import Style
 import Task
-import TheDude
 import Url exposing (Url)
 import Util exposing (Point)
 
@@ -35,7 +31,6 @@ type alias Model =
     , loading : Bool
     , window : Dimensions
     , mousePos : Point
-    , linkHover : Bool
     , ramblingListPage : Page.RamblingList.Model
     , ramblingPage : Page.Rambling.Model
     , projectListPage : Page.ProjectList.Model
@@ -48,7 +43,6 @@ type Msg
     | UrlChanged Url.Url
     | MouseMove Point
     | SetWindowSize Int Int
-    | LinkHover Bool
     | RamblingListMsg Page.RamblingList.Msg
     | RamblingMsg Page.Rambling.Msg
     | ProjectListMsg Page.ProjectList.Msg
@@ -84,8 +78,7 @@ init _ url key =
                 , route = Route.fromUrl url
                 , loading = True
                 , window = Dimensions 0.0 0.0
-                , mousePos = Point 0.0 0.0
-                , linkHover = False
+                , mousePos = Point -30 -30
                 , ramblingListPage = Page.RamblingList.empty
                 , ramblingPage = Page.Rambling.empty
                 , projectListPage = Page.ProjectList.empty
@@ -106,9 +99,7 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         LinkClicked (Browser.Internal url) ->
-            ( { model | linkHover = False }
-            , Nav.pushUrl model.key (Url.toString url)
-            )
+            ( model, Nav.pushUrl model.key (Url.toString url) )
 
         LinkClicked (Browser.External href) ->
             ( model, Nav.load href )
@@ -121,9 +112,6 @@ update msg model =
 
         SetWindowSize width height ->
             ( { model | window = { width = toFloat width, height = toFloat height } }, Cmd.none )
-
-        LinkHover hovering ->
-            ( { model | linkHover = hovering }, Cmd.none )
 
         RamblingListMsg submsg ->
             merge model (RamblingListPage (Page.RamblingList.update submsg model.ramblingListPage))
@@ -143,7 +131,6 @@ subscriptions _ =
     Sub.batch
         [ Browser.Events.onResize SetWindowSize
         , Browser.Events.onMouseMove (Decode.map MouseMove decodeMousePos)
-        , Ports.linkHover LinkHover
         ]
 
 
@@ -189,10 +176,10 @@ merge model page =
             ( { model | projectPage = submodel }, Cmd.map ProjectMsg cmd )
 
 
-mapDoc : (a -> msg) -> Util.StyledDoc a -> Util.StyledDoc msg
+mapDoc : (a -> msg) -> Document a -> Document msg
 mapDoc toMsg { title, body } =
     { title = title
-    , body = List.map (Html.Styled.map toMsg) body
+    , body = List.map (Html.map toMsg) body
     }
 
 
@@ -204,23 +191,15 @@ view model =
     in
     { title = title ++ " |> maggisk"
     , body =
-        div []
-            [ Style.global
-            , Header.viewHeader model.url model.route
-            , TheDude.viewTheDude
-                model.mousePos
-                30.0
-                { x = model.window.width - 60, y = 45 }
-                model.linkHover
-            , div [ css mainStyle ] body
-            , viewMouse model.mousePos
-            ]
-            |> toUnstyled
-            |> List.singleton
+        [ Header.viewHeader model.url model.route
+        , viewDude model.window model.mousePos
+        , div [ class "Main_content" ] body
+        , viewMouse model.mousePos
+        ]
     }
 
 
-viewPage : Model -> Util.StyledDoc Msg
+viewPage : Model -> Document Msg
 viewPage model =
     case model.route of
         Just Route.RamblingList ->
@@ -239,30 +218,41 @@ viewPage model =
             Util.error404
 
 
-viewMouse : Point -> Html Msg
-viewMouse pos =
+viewDude : Dimensions -> Point -> Html Msg
+viewDude window mouse =
+    div [ class "Main_dude", style "left" (String.fromFloat (window.width - 80) ++ "px") ]
+        [ img [ class "Main_dude", src "/img/dude.png" ] []
+        , eyeball mouse (window.width - 67)
+        , eyeball mouse (window.width - 37)
+        ]
+
+
+eyeball : Point -> Float -> Html Msg
+eyeball mouse x =
+    let
+        y =
+            47.0
+
+        distance =
+            sqrt (((mouse.x - x) ^ 2) + ((mouse.y - y) ^ 2))
+                |> Basics.min 10.0
+
+        angle =
+            atan2 (mouse.y - y) (mouse.x - x)
+    in
     div
-        [ css mouseStyle
-        , style "left" (String.fromFloat pos.x ++ "px")
-        , style "top" (String.fromFloat pos.y ++ "px")
+        [ class "Main_eyeball"
+        , style "left" (String.fromFloat (x + cos angle * distance) ++ "px")
+        , style "top" (String.fromFloat (y + sin angle * distance) ++ "px")
         ]
         []
 
 
-mainStyle : List Style
-mainStyle =
-    [ maxWidth (px 800)
-    , margin3 (px 30) auto zero
-    ]
-
-
-mouseStyle : List Style
-mouseStyle =
-    [ position fixed
-    , Css.width (px 20)
-    , Css.height (px 20)
-    , borderRadius (pct 50)
-    , margin4 (px -10) zero zero (px -10)
-    , backgroundColor (rgba 244 224 77 0.25)
-    , pointerEvents none
-    ]
+viewMouse : Point -> Html Msg
+viewMouse pos =
+    div
+        [ class "Main_mouse"
+        , style "left" (String.fromFloat pos.x ++ "px")
+        , style "top" (String.fromFloat pos.y ++ "px")
+        ]
+        []

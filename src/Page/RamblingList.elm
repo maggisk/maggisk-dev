@@ -1,14 +1,13 @@
 module Page.RamblingList exposing (Model, Msg, empty, enter, update, view)
 
 import Api
-import Css exposing (..)
+import Browser exposing (Document)
 import DateFormat as DF
-import Html.Styled exposing (..)
-import Html.Styled.Attributes exposing (css)
+import Html exposing (..)
+import Html.Attributes exposing (class, classList)
 import List.Extra exposing (gatherEqualsBy)
 import RemoteData exposing (WebData)
 import Route
-import Style
 import Time exposing (utc)
 import Util
 
@@ -37,7 +36,7 @@ update (GotResponse ramblings) _ =
     ( ramblings, Cmd.none )
 
 
-view : Model -> Util.StyledDoc Msg
+view : Model -> Document Msg
 view model =
     let
         success ramblings =
@@ -50,10 +49,10 @@ view model =
             ul [] (List.indexedMap ramble (r :: rambles))
 
         ramble i r =
-            li [ css style.line ]
-                [ span [ Style.list [ ( [ visibility hidden ], i > 0 ) ] ]
+            li [ class "RamblingList_line" ]
+                [ span [ classList [ ( "RamblingList_hidden", i > 0 ) ] ]
                     [ text <| DF.format [ DF.yearNumber, DF.text " " ] utc r.time ]
-                , span [ css style.monthDay ]
+                , span [ class "RamblingList_monthDay" ]
                     [ text <| DF.format [ DF.monthNameAbbreviated, DF.text " ", DF.dayOfMonthSuffix ] utc r.time ]
                 , a [ Route.href (Route.Rambling r.slug) ]
                     [ text r.title ]
@@ -61,17 +60,3 @@ view model =
     in
     RemoteData.map success model
         |> Util.handleRemoteFailure
-
-
-style : { line : List Style, monthDay : List Style }
-style =
-    { line =
-        [ Style.prominent
-        , listStyleType none
-        , margin2 (px 15) zero
-        ]
-    , monthDay =
-        [ fontSize (px 16)
-        , padding2 zero (px 20)
-        ]
-    }

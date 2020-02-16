@@ -1,0 +1,15 @@
+@use "conf";
+
+.Snippets_subtle {
+    @include conf.subtle;
+    margin-right: 20px;
+
+    &--link {
+        text-decoration: underline;
+
+        &:hover {
+            color: conf.$dark;
+            background: transparent;
+        }
+    }
+}

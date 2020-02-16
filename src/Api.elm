@@ -1,6 +1,5 @@
 module Api exposing (Project, Ramble, allProjects, allRamblings, project, rambling)
 
-import Html exposing (Html)
 import Http
 import Json.Decode as Decode exposing (Decoder, nullable, string)
 import Json.Decode.Extra exposing (parseInt)

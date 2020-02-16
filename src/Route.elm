@@ -1,7 +1,7 @@
 module Route exposing (Route(..), default, fromUrl, href, toUrl)
 
-import Html.Styled
-import Html.Styled.Attributes
+import Html
+import Html.Attributes
 import Url exposing (Url)
 import Url.Parser as Parser exposing ((</>), Parser, map, oneOf, s, string)
 
@@ -44,9 +44,9 @@ default =
     RamblingList
 
 
-href : Route -> Html.Styled.Attribute msg
+href : Route -> Html.Attribute msg
 href route =
-    Html.Styled.Attributes.href (toUrl route)
+    Html.Attributes.href (toUrl route)
 
 
 toUrl : Route -> String

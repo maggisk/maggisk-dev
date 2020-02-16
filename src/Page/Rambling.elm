@@ -1,13 +1,12 @@
 module Page.Rambling exposing (Model, Msg, empty, enter, update, view)
 
 import Api
-import Css exposing (..)
+import Browser exposing (Document)
 import DateFormat as DF
 import Dict exposing (Dict)
-import Html.Styled exposing (..)
-import Html.Styled.Attributes exposing (css)
+import Html exposing (..)
+import Html.Attributes exposing (class)
 import RemoteData exposing (WebData)
-import Style
 import Time exposing (utc)
 import Util
 
@@ -43,7 +42,7 @@ update (GotResponse slug rambling) model =
     ( Dict.insert slug rambling model, Cmd.none )
 
 
-view : Model -> String -> Util.StyledDoc Msg
+view : Model -> String -> Document Msg
 view model slug =
     let
         success ramble =
@@ -51,7 +50,7 @@ view model slug =
             , body =
                 [ h2 []
                     [ text ramble.title
-                    , span [ css subStyle ]
+                    , span [ class "Rambling_date" ]
                         [ text <|
                             DF.format
                                 [ DF.monthNameFull
@@ -71,11 +70,3 @@ view model slug =
             }
     in
     getBySlug slug model |> RemoteData.map success |> Util.handleRemoteFailure
-
-
-subStyle : List Style
-subStyle =
-    [ Style.subtle
-    , display block
-    , paddingTop (px 5)
-    ]
