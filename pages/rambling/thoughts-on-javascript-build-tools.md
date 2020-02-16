@@ -23,24 +23,26 @@ You can get a decent setup like that using a few different npm packages.
 * [live-server](https://www.npmjs.com/package/live-server) for live-reloading
 * All the other tools you're using (sass, babel etc)
 
-Your package.json scripts field might look something like this (untested, probably has bugs)
+Your package.json scripts field will look something like this
 
 ```json
 {
     "scripts": {
-        "watch": "npm-run-all --parallel watch:**",
-        "watch:css": "sass --watch app/css:dev/css",
-        "watch:elm": "chokidar '**/*.elm' -c 'elm make src/Main.elm --output dev/elm.js' --initial",
-        "watch:javascript": "babel app/app.js --watch --out-file dev/app.js",
-        "watch:server": "cd dev && live-server",
-        "build": "npm-run-all --parallel build:**",
-        "build:css": "sass --style=compressed app/css:build/css",
-        "build:elm": "elm make src/Main.elm --optimize --output build/elm.js",
-        "build:javascript": "babel app/app.js --out-file build/app.js"
+        "start": "npm-run-all --parallel --print-label watch:**",
+        "watch:css": "sass --watch css/app.scss dist/css/app.css",
+        "watch:elm": "chokidar 'src/**/*.elm' -c 'elm make src/Main.elm --output dist/js/elm.js' --initial",
+        "watch:js": "babel app/app.js --watch --out-file dist/js/app.js",
+        "watch:server": "live-server --entry-file=index.html dist",
+        "build": "npm-run-all --parallel --print-label build:**",
+        "build:css": "sass --style=compressed css/app.scss dist/css/app.css",
+        "build:elm": "elm make src/Main.elm --optimize --output dist/js/elm.js",
+        "build:js": "babel app/app.js --out-file dist/js/app.js"
     }
 }
 ```
 
-It's not perfect. You lose all coloring from your build commands for example. I'm also probably overlooking some webpack feature that can't be replaced like this. Code splitting comes to mind, but if you're using something like [Elm](https://elm-lang.org/) or [Svelte](https://svelte.dev/) the output is so tiny compared to React/Vue/Angular that it doesn't really matter.
+Check out a complete example with sass, elm, uglifyjs and [esbuild](https://github.com/evanw/esbuild/) as used by this website at [maggisk-dev/package.json](https://github.com/maggisk/maggisk-dev/blob/master/package.json)
+
+I'm probably overlooking some webpack feature that can't be replaced like this. Code splitting comes to mind, but if you're using something like [Elm](https://elm-lang.org/) or [Svelte](https://svelte.dev/) the output is so tiny compared to React/Vue/Angular that it doesn't really matter.
 
 There are some issues left, like combining your babel-generated-javascript and elm-generated-javascript into a single file, but this is the build setup that I'm going to strive for from now on.

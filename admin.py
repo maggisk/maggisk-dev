@@ -191,7 +191,7 @@ def build():
 
 def preview():
     build()
-    shell('npm run preview', capture_output=False)
+    shell('npm start', capture_output=False)
 
 
 def main():
@@ -200,7 +200,7 @@ def main():
         'project': project,
         'edit': edit,
         'build': build,
-        'preview': preview,
+        'start': preview,
     }
 
     if len(sys.argv) > 1 and sys.argv[1] in actions:
