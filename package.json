@@ -7,7 +7,7 @@
     "watch:css": "sass --watch src/app.scss dist/css/app.css",
     "watch:elm": "chokidar 'src/**/*.elm' -c 'elm make src/Main.elm --output dist/js/elm.js' --initial",
     "watch:js": "chokidar 'src/**/*.js' -c 'esbuild --bundle src/app.js --outfile=dist/js/app.js --sourcemap' --initial",
-    "watch:server": "ln static/index.html dist/index.html && live-server --port=1234 --entry-file=index.html --mount=/:static dist",
+    "watch:server": "ln static/index.html dist/index.html && live-server --no-browser --port=1234 --entry-file=index.html --mount=/:static dist",
     "build": "npm run clean && cp -r static/* dist && npm-run-all --parallel --print-label build:**",
     "build:css": "sass --style=compressed src/app.scss dist/css/app.css",
     "build:elm": "elm make src/Main.elm --optimize --output dist/js/elm.js && npm run minify",

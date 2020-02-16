@@ -4,6 +4,7 @@ import Api
 import Browser exposing (Document)
 import Dict exposing (Dict)
 import Html exposing (..)
+import Html.Attributes exposing (href)
 import RemoteData exposing (WebData)
 import Snippets
 import Util
@@ -47,7 +48,7 @@ view model slug =
             { title = project.title
             , body =
                 [ h2 []
-                    [ text project.title
+                    [ a [ href project.link ] [ text project.title ]
                     , Snippets.projectMeta project
                     ]
                 , project.body

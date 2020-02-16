@@ -27,7 +27,7 @@ viewHeader url route =
                     , ( "Projects", Route.ProjectList, isMatch url route "/projects" "/projects/" )
                     ]
             ]
-        , div [ class "Header_section" ]
+        , div [ class "Header_section Header_section--right" ]
             []
         ]
 
