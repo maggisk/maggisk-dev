@@ -39,7 +39,8 @@ type alias Model =
 
 
 type Msg
-    = LinkClicked Browser.UrlRequest
+    = NoOp
+    | LinkClicked Browser.UrlRequest
     | UrlChanged Url.Url
     | MouseMove Point
     | SetWindowSize Int Int
@@ -85,12 +86,11 @@ init _ url key =
                 , projectPage = Page.Project.empty
                 }
 
+        toWindowSize { viewport } =
+            SetWindowSize (Basics.round viewport.width) (Basics.round viewport.height)
+
         getWindowSize =
-            Browser.Dom.getViewport
-                |> Task.perform
-                    (\{ viewport } ->
-                        SetWindowSize (Basics.round viewport.width) (Basics.round viewport.height)
-                    )
+            Task.perform toWindowSize Browser.Dom.getViewport
     in
     ( model, Cmd.batch [ cmd, getWindowSize ] )
 
@@ -98,8 +98,16 @@ init _ url key =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        NoOp ->
+            ( model, Cmd.none )
+
         LinkClicked (Browser.Internal url) ->
-            ( model, Nav.pushUrl model.key (Url.toString url) )
+            ( model
+            , Cmd.batch
+                [ Nav.pushUrl model.key (Url.toString url)
+                , Task.perform (always NoOp) (Browser.Dom.setViewport 0 0)
+                ]
+            )
 
         LinkClicked (Browser.External href) ->
             ( model, Nav.load href )
@@ -192,8 +200,8 @@ view model =
     { title = title ++ " |> maggisk"
     , body =
         [ Header.viewHeader model.url model.route
-        , viewDude model.window model.mousePos
         , div [ class "Main_content" ] body
+        , viewDude model.window model.mousePos
         , viewMouse model.mousePos
         ]
     }

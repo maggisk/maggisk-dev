@@ -9,6 +9,9 @@
         margin: -10px 0 0 -10px;
         background-color: rgba(244, 244, 77, 0.25);
         pointer-events: none;
+        @media only screen and (max-width: conf.$breakpoint) {
+            display: none;
+        }
     }
 
     &_content {

@@ -2,6 +2,7 @@
 
 import os, sys, typing, json, datetime, re, operator, shlex, subprocess, tempfile
 from markdown import markdown
+from slugify import slugify
 
 ROOT_DIR: str    = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR: str    = os.path.join(ROOT_DIR, 'pages')
@@ -115,11 +116,6 @@ def shell(cmd: str, *subs, **options):
     process = subprocess.run(cmd, **options)
     process.check_returncode()
     return process.stdout
-
-
-def slugify(s: str) -> str:
-    s = shell('echo {} | iconv -t ascii//TRANSLIT', s)
-    return re.sub('[^\w]', '-', s).strip('-').lower()
 
 
 def editor(filename: str):

@@ -1,2 +1,4 @@
 Markdown==3.2
 Pygments==2.5.2
+python-slugify==4.0.0
+text-unidecode==1.3

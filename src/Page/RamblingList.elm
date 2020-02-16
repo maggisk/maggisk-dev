@@ -46,17 +46,18 @@ view model =
             }
 
         year ( r, rambles ) =
-            ul [] (List.indexedMap ramble (r :: rambles))
+            div []
+                [ h2 []
+                    [ text <| DF.format [ DF.yearNumber ] utc r.time ]
+                , ul [] (List.map ramble (r :: rambles))
+                ]
 
-        ramble i r =
+        ramble r =
             li [ class "RamblingList_line" ]
-                [ span [ classList [ ( "RamblingList_hidden", i > 0 ) ] ]
-                    [ text <| DF.format [ DF.yearNumber, DF.text " " ] utc r.time ]
-                , span [ class "RamblingList_monthDay" ]
+                [ span [ class "RamblingList_date" ]
                     [ text <| DF.format [ DF.monthNameAbbreviated, DF.text " ", DF.dayOfMonthSuffix ] utc r.time ]
-                , a [ Route.href (Route.Rambling r.slug) ]
+                , a [ class "RamblingList_title", Route.href (Route.Rambling r.slug) ]
                     [ text r.title ]
                 ]
     in
-    RemoteData.map success model
-        |> Util.handleRemoteFailure
+    RemoteData.map success model |> Util.handleRemoteFailure

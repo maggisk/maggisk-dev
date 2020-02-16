@@ -4,7 +4,7 @@
 * @progress 100
 * @proudness 80
 * @language Python + Elm
-* @slug maggisk-dev--this-website
+* @slug maggisk-dev-this-website
 * @time 2020-02-16 14:59
 
 Static website with a python command-line admin interface, exporting markdown documents to json that elm can consume and render client-side.
