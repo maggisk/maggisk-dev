@@ -18,4 +18,20 @@ customElements.define(
   }
 );
 
-Elm.Main.init();
+const app = Elm.Main.init();
+const gaId = window.GAID;
+
+if (gaId && gaId !== "") {
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = function(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', gaId);
+
+  let script = document.createElement('script');
+  script.setAttribute('src', 'https://www.googletagmanager.com/gtag/js?id=' + gaId);
+  document.body.appendChild(script);
+
+  app.ports.onUrlChange.subscribe(function(path) {
+    gtag('config', gaId, {'page_path': path});
+  });
+}

@@ -1,4 +1,4 @@
-module Main exposing (main)
+port module Main exposing (main)
 
 import Browser exposing (Document)
 import Browser.Dom
@@ -16,6 +16,9 @@ import Route exposing (Route)
 import Task
 import Url exposing (Url)
 import Util exposing (Point)
+
+
+port onUrlChange : String -> Cmd msg
 
 
 type alias Dimensions =
@@ -106,6 +109,7 @@ update msg model =
             , Cmd.batch
                 [ Nav.pushUrl model.key (Url.toString url)
                 , Task.perform (always NoOp) (Browser.Dom.setViewport 0 0)
+                , onUrlChange url.path
                 ]
             )
 
