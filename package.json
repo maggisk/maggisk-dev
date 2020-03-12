@@ -11,7 +11,7 @@
     "build": "npm run clean && cp -r static/* dist && npm-run-all --parallel --print-label build:**",
     "build:css": "sass --style=compressed src/app.scss dist/css/app.css",
     "build:elm": "elm make src/Main.elm --optimize --output dist/js/elm.js && npm run minify",
-    "build:js": "esbuild src/app.js --bundle --define:window.GAID=\"\\\"$GAID\\\"\" --outfile=dist/js/app.js",
+    "build:js": "esbuild src/app.js --bundle --define:window.GAID=\"\\\"$GAID\\\"\" --outfile=dist/js/app.js --minify",
     "minify": "uglifyjs dist/js/elm.js --compress 'pure_funcs=\"F2,F3,F4,F5,F6,F7,F8,F9,A2,A3,A4,A5,A6,A7,A8,A9\",pure_getters,keep_fargs=false,unsafe_comps,unsafe' | uglifyjs --mangle --output=dist/js/elm.js",
     "format": "elm-format src/ --yes"
   },
