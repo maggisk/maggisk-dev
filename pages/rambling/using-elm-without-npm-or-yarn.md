@@ -26,7 +26,7 @@ ENV ELM_VERSION=0.19.1 \
     MODD_VERSION=0.8 \
     DEVD_VERSION=0.9 \
     ESBUILD_VERSION=0.0.9 \
-    DART_VERSION=1.26.1
+    SASS_VERSION=1.26.1
 
 # only thing missing is curl
 RUN apt update && apt install -y curl && apt clean
@@ -58,7 +58,7 @@ RUN curl -L "https://registry.npmjs.org/esbuild-linux-64/-/esbuild-linux-64-$ESB
 
 # sass (dart version (the best version)): https://sass-lang.com/
 RUN cd / \
-    && curl -L "https://github.com/sass/dart-sass/releases/download/$DART_VERSION/dart-sass-$DART_VERSION-linux-x64.tar.gz" \
+    && curl -L "https://github.com/sass/dart-sass/releases/download/$SASS_VERSION/dart-sass-$SASS_VERSION-linux-x64.tar.gz" \
     | tar xz \
     && ln -s /dart-sass/sass /usr/local/bin/sass
 
