@@ -35,23 +35,20 @@ initIfNeeded currentModel data newModel cmd =
 handleRemoteFailure : WebData (Document msg) -> Document msg
 handleRemoteFailure data =
     case data of
+        RemoteData.Success doc ->
+            doc
+
+        RemoteData.Loading ->
+            loading
+
         RemoteData.Failure (Http.BadStatus 404) ->
             error404
-
-        RemoteData.Failure (Http.BadBody _) ->
-            error500
 
         RemoteData.Failure _ ->
             error500
 
         RemoteData.NotAsked ->
             error500
-
-        RemoteData.Loading ->
-            loading
-
-        RemoteData.Success doc ->
-            doc
 
 
 error404 : Document msg
