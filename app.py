@@ -74,12 +74,17 @@ def projects():
 
 @app.route('/<slug>/')
 def page(slug):
-    print(slug)
     item = next(query(slug=slug))
     return render_template(item['type'] + '.html', **{
         item['type']: item,
         'tab': item['type'],
     })
+
+
+@app.route('/404.html')
+def not_found():
+    return render_template('404.html')
+
 
 
 if __name__ == '__main__':
