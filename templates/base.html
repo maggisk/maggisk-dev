@@ -5,12 +5,33 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans|Proza+Libre&display=swap" rel="stylesheet">
-        <link href="/css/app.css" rel="stylesheet">
+        <link href="/static/css/app.css" rel="stylesheet">
+        <link href="/static/css/hilite.css" rel="stylesheet">
         {% block head %}
         {% endblock %}
     </head>
     <body>
-        {% block main %}
-        {% endblock %}
+        <header class="Header">
+            <div class="Header_section Header_section--left">
+                <a href="/" class="Header_title">
+                    Ma<span>.</span>gnus<span>.is</span></a>
+                <a href="/" class="Header_summary">
+                    <span class="Header_code">{{ "|>" }} </span>
+                    Ramblings of a software developer
+                </a>
+            </div>
+            <div class="Header_section Header_section--center">
+                <div>
+                    <a href="/" class="Header_tab{% if tab == 'blog' %} Header_tab--selected{% endif %}">Ramblings</a>
+                    <a href="/projects/" class="Header_tab{% if tab == 'project' %} Header_tab--selected{% endif %}">Projects</a>
+                </div>
+            </div>
+            <div class="Header_section Header_section--right">
+            </div>
+        </header>
+        <main class="Main_content">
+            {% block main %}
+            {% endblock %}
+        </main>
     </body>
 </html>

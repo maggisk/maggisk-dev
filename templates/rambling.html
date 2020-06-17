@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block main %}
+  <h2>
+    {{ post.title }}
+    <span class="Rambling_date">
+      {{ post.date.strftime('%B') }} {{ nth(post.date.day) }}, {{ post.date.year }}
+    </span>
+  </h2>
+  {{ markdown(post.body) | safe }}
+{% endblock %}
