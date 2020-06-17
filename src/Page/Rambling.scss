@@ -1,7 +1,0 @@
-@use "../conf";
-
-.Rambling_date {
-    @include conf.subtle;
-    display: block;
-    padding-top: 5px;
-}
