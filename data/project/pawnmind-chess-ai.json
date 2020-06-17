@@ -1,0 +1,11 @@
+{
+  "body": "chess AI using [Bitboards](https://en.wikipedia.org/wiki/Bitboard) for super efficient move generation, but needs a [transposition table](https://www.chessprogramming.org/Transposition_Table) and a more sophisticated [search algorigthm](https://www.chessprogramming.org/Search) to become a really strong chess AI. \n\nHas support for [xboard protocol](http://hgm.nubati.net/CECP.html) and can be connected to compatible GUIs via stdin/stdout.\n",
+  "summary": "chess AI using bitboards for super efficient move generation",
+  "position": 70,
+  "progress": "≈ 60%",
+  "date": "2020-06-17T18:45:11.248Z",
+  "title": "Pawnmind chess AI",
+  "language": "C",
+  "type": "project",
+  "link": "https://github.com/maggisk/pawnmind"
+}

@@ -1,0 +1,7 @@
+{% macro project_meta(project) -%}
+    <div class="Snippets">
+        <a href="{{ project.link }}" class="Snippets_subtle Snippets_subtle--link">{{ urlparse(project.link).netloc }}</a>
+        <span class="Snippets_subtle">Written in {{ project.language }}</span>
+        <span class="Snippets_subtle">{{ project.progress }} done</span>
+    </div>
+{%- endmacro %}

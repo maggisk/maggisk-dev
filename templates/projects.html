@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% from "snippets.html" import project_meta with context %}
+
+{% block main %}
+  <h2>My dorky little pet projects</h2>
+
+  {% for p in projects %}
+    <div class="ProjectList_title">
+      <a href="/{{ p.slug }}/">{{ p.title }}</a>
+    </div>
+    {{ project_meta(p) }}
+    <div class="ProjectList_summary">
+      {{ markdown(p.summary) | safe }}
+    </div>
+  {% endfor %}
+{% endblock %}
