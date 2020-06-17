@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% from "snippets.html" import project_meta with context %}
+
+{% block main %}
+  <h2>
+    <a href="{{ project.link }}">{{ project.title }}</a>
+    {{ project_meta(project) }}
+  </h2>
+  {{ markdown(project.body) | safe }}
+{% endblock %}

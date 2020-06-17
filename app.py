@@ -1,5 +1,6 @@
 import os
 import json
+from urllib.parse import urlparse
 from collections import defaultdict
 from itertools import groupby
 from operator import itemgetter
@@ -8,6 +9,10 @@ from markdown import markdown as md
 from flask import Flask, request, render_template
 
 app = Flask(__name__)
+
+app.jinja_env.trim_blocks = True
+app.jinja_env.lstrip_blocks = True
+
 app.config['FREEZER_DESTINATION_IGNORE'] = ['.git*']
 app.config['FREEZER_DESTINATION'] = 'dist'
 
@@ -48,6 +53,7 @@ def markdown(s):
 @app.context_processor
 def load_base_template_requirements():
     return {
+        'urlparse': urlparse,
         'nth_suffix': nth_suffix,
         'nth': lambda n: '{}{}'.format(n, nth_suffix(n)),
         'markdown': markdown,
@@ -84,7 +90,6 @@ def page(slug):
 @app.route('/404.html')
 def not_found():
     return render_template('404.html')
-
 
 
 if __name__ == '__main__':
