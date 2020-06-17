@@ -1,6 +1,6 @@
 backend:
   name: git-gateway
-  branch: master_wip
+  branch: netlify-admin-flask
 
 publish_mode: editorial_workflow
 media_folder: "static/uploads"
