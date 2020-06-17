@@ -1,0 +1,11 @@
+{
+  "body": "Static website using [netlify-cms](https://www.netlifycms.org/), hosted on [netlify](https://www.netlify.com/) and rendered with python + [flask](https://flask.palletsprojects.com/en/1.1.x/)\n",
+  "summary": "This very (simple) website, made with python+flask, using netlify-cms and hosted with netlify",
+  "position": 80,
+  "progress": "100%",
+  "date": "2020-06-17T18:41:33.506Z",
+  "title": "This website",
+  "language": "Python",
+  "type": "project",
+  "link": "https://github.com/maggisk/maggisk-dev"
+}
