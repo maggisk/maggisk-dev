@@ -19,7 +19,7 @@ def read_documents(root, date_field_map):
                 item = json.load(f)
             item['slug'] = os.path.splitext(filename)[0]
             for field in date_field_map[item['type']]:
-                item[k] = isoparse(item[field])
+                item[field] = isoparse(item[field])
             yield item
 
 
