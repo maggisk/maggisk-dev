@@ -28,7 +28,6 @@ collections:
       - {label: "Position", name: "position", widget: "number"}
       - {label: "Publish Date", name: "date", widget: "datetime"}
       - {label: "Summary", name: "summary", widget: "text"}
-      - {label: "Body", name: "body", widget: "markdown"}
       - {label: "URL", name: "url", widget: "string"}
       - {label: "Programming language", name: "language", widget: "string"}
       - {label: "Progress", name: "progress", widget: "string"}
