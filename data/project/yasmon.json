@@ -1,5 +1,5 @@
 {
-  "body": "Simple <font style=\"font-size: 12px\">(but awesome)</font> status bar for [dwm](https://dwm.suckless.org/), tiling window manager. It responds to unix process signals to give instant feedback when changing volume, screen brightness and keyboard layout. It lets you set different update intervals for different components and you can easily create your own components from any shell command or by writing a custom go function.\n\n![yasmon example](/img/yasmon.png)\n",
+  "body": "Simple <font style=\"font-size: 12px\">(but awesome)</font> status bar for [dwm](https://dwm.suckless.org/), tiling window manager. It responds to unix process signals to give instant feedback when changing volume, screen brightness and keyboard layout. It lets you set different update intervals for different components and you can easily create your own components from any shell command or by writing a custom go function.\n\n![yasmon example](https://raw.githubusercontent.com/maggisk/yasmon/master/demo.png)\n",
   "summary": "Simple (but awesome) status bar for dwm, tiling window manager",
   "position": 20,
   "progress": "100%",
