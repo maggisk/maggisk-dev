@@ -8,7 +8,10 @@ from dateutil.parser import isoparse
 from markdown import markdown as md
 from flask import Flask, request, render_template
 
-app = Flask(__name__)
+app = Flask(__name__,
+    static_folder='public',
+    static_url_path='/'
+)
 
 app.jinja_env.trim_blocks = True
 app.jinja_env.lstrip_blocks = True
